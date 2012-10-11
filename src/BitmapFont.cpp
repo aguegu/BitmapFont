@@ -29,17 +29,34 @@ int main(int argc, char* argv[])
 	cout << byte_in_code << endl;
 	cout << code_offset << endl;
 
-	char *p = new char[length];
+	unsigned char *p = new unsigned char[length];
 
-	ifstream fin;
-	fin.open(argv[1], ios::binary);
-	fin.read(p, length);
+	ifstream fin(argv[1], ios::binary);
+	ofstream fout(argv[2]);
+
+	char tmp[5];
+	char c_on[] =
+	{ 0xe2, 0x97, 0xbc };
+	char c_off[] =
+	{ 0xe2, 0x97, 0xbb };
+	while (fin.read((char *) p, length))
+	{
+		//fout.write(p, length);
+		for (int i = 0; i < length; i++)
+		{
+			sprintf(tmp, "0x%02x", p[i]);
+			fout << tmp;
+			fout << ", ";
+		}
+
+		fout.write(c_on, 3);
+		fout.write(c_off, 3);
+		fout << endl;
+
+		fout.flush();
+	}
+
 	fin.close();
-
-	ofstream fout;
-	fout.open(argv[2]);
-	fout.write(p, length);
-	fout.flush();
 	fout.close();
 
 	return 0;
