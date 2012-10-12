@@ -15,9 +15,9 @@
 using namespace std;
 
 const char c_on[] =
-{ 0xe2, 0x96, 0xa0 };
+{ 0xe2, 0x96, 0xa0, 0x20 };
 const char c_off[] =
-{ 0xe2, 0x96, 0xa1 };
+{ 0xe2, 0x96, 0xa1, 0x20 };
 
 int convertCode(char *inbuf, unsigned long inlen, char *outbuf,
 		unsigned long outlen)
@@ -50,28 +50,21 @@ char *byteStringPure(unsigned char c)
 	return tmp;
 }
 
-
 void printString(ofstream & fout, unsigned char *p, int length)
 {
-//	char tmp[5];
-
 	for (int i = 0; i < length; i++)
 	{
-//		sprintf(tmp, "0x%02x", p[i]);
-//		fout << tmp;
 		fout << byteString(p[i]);
 		fout << ", ";
 
 		if (i % 8 == 7)
 			fout << endl;
 	}
-	fout << endl;
 }
 
 void printPattern(ofstream & fout, unsigned char *p, int length,
 		int byte_in_row)
 {
-
 	for (int i = 0; i < length;)
 	{
 		fout << "//  ";
@@ -81,16 +74,13 @@ void printPattern(ofstream & fout, unsigned char *p, int length,
 			unsigned char temp = p[i];
 			for (int j = 0; j < 8; j++)
 			{
-				fout.write(temp >= 0x80 ? c_on : c_off, 3);
+				fout.write(temp >= 0x80 ? c_on : c_off, 4);
 				temp <<= 1;
-				fout << ' ';
 			}
 			i++;
 		}
 		fout << endl;
 	}
-
-	fout << endl;
 }
 
 int main(int argc, char* argv[])
@@ -141,13 +131,17 @@ int main(int argc, char* argv[])
 		}
 
 		convertCode(s_in, 8, s_out, 8);
-		fout << "(UTF-8)" << byteString(s_out[0]) << byteStringPure(s_out[1]) << byteStringPure(s_out[2]);
+		fout << "(UTF-8)" << byteString(s_out[0]) << byteStringPure(s_out[1])
+				<< byteStringPure(s_out[2]);
 		fout << ", \" " << s_out << " \"";
 
 		fout << endl;
 
 		printString(fout, p, length);
+		fout << endl;
+
 		printPattern(fout, p, length, byte_in_row);
+		fout << endl;
 
 		fout.flush();
 	}
