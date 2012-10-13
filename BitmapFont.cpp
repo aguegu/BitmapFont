@@ -96,10 +96,10 @@ void printPattern(unsigned char *p, int length, int byte_in_row)
 	{
 		cout << "//  ";
 
-		for (int k = byte_in_row; k > 0; k--)
+		for (int k = byte_in_row; k--;)
 		{
 			unsigned char temp = p[i];
-			for (int j = 0; j < 8; j++)
+			for (int j = 8; j--;)
 			{
 				cout.write(temp >= 0x80 ? c_on : c_off, 4);
 				temp <<= 1;
@@ -117,14 +117,6 @@ int main(int argc, char* argv[])
 	int byte_in_code = atoi(argv[4]);
 	int code_offset;
 	sscanf(argv[5], "0x%02X", &code_offset);
-
-//cout << "BitmapFont" << endl; // prints !!!Hello World!!!
-//	cout << argv[1] << ", ";
-//	cout << argv[2] << ", ";
-//	cout << length << ", ";
-//	cout << byteString(byte_in_row) << ", ";
-//	cout << byteString(byte_in_code) << ", ";
-//	cout << byteString(code_offset) << endl;
 
 	unsigned char *p = new unsigned char[length];
 

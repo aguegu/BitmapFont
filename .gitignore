@@ -1,5 +1,6 @@
-Debug/
 output/
+BitmapFont
+*.*~
 
 # Compiled Object files
 *.slo
