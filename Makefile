@@ -1,8 +1,8 @@
 CC  = 	g++
 CFLAGS = -O2 -g -Wall -c
-SOURCES = BitmapFont.cpp
+SOURCES = BitmapFont.cpp 
 OBJECTS = $(SOURCES:.cpp=.o)
-TARGET = BitmapFont
+TARGET = BitmapFont 
 FONTS = ASC12 ASC16 ASC48 HZK12 HZK14 HZK16 HZK16F HZK16S HZK24F HZK24H HZK24K HZK24S HZK24T HZK32 HZK40S HZK40T HZK48 HZK48S HZK48T
 
 :$(TARGET)
@@ -13,6 +13,11 @@ $(TARGET): $(OBJECTS)
 
 %.o: %.cpp
 	$(CC) $(CFLAGS) $< -o $@
+
+hackfont: HackFont.o
+	$(CC) HackFont.o -o $@
+	./$@ font/HZK16 font/HZK16_0
+	./BitmapFont font/HZK16_0 32 2 2 0xA1 > output/HZK16_0
 
 all:$(FONTS)
 

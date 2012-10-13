@@ -89,7 +89,7 @@ void printHeader(long pos, int length, int byte_in_code, int code_offset)
 	cout << "\" " << s_out << " \"";
 }
 
-void printVar(unsigned char *p, int length)
+void printVar(char *p, int length)
 {
 	for (int i = 0; i < length; i++)
 	{
@@ -101,7 +101,7 @@ void printVar(unsigned char *p, int length)
 	}
 }
 
-void printPattern(unsigned char *p, int length, int byte_in_row)
+void printPattern(char *p, int length, int byte_in_row)
 {
 	for (int i = 0; i < length;)
 	{
@@ -129,13 +129,13 @@ int main(int argc, char* argv[])
 	int code_offset;
 	sscanf(argv[5], "0x%02X", &code_offset);
 
-	unsigned char *p = new unsigned char[length];
+	char *p = new char[length];
 
 	ifstream fin(argv[1], ios::binary);
 
 	cout << hex;
 
-	while (fin.read((char *) p, length))
+	while (fin.read(p, length))
 	{
 		long pos = fin.tellg();
 
@@ -152,6 +152,8 @@ int main(int argc, char* argv[])
 	}
 
 	fin.close();
+	
+	delete[] p;
 
 	return 0;
 }
