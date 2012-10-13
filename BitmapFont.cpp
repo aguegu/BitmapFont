@@ -54,11 +54,13 @@ void printHeader(long index, int byte_in_code, int code_offset)
 {
 	char s_in[8] =
 	{ 0 };
-	char s_out[8];
+	char s_out[8] =
+	{ 0 };
 
 	if (byte_in_code == 1)
 	{
 		s_in[0] = index + code_offset;
+		convertCode(s_in, 8, s_out, 8);
 		cout << "(GB2312)" << byteString(s_in[0]) << ", ";
 		cout << "(UTF-8)" << byteString(s_in[0]) << ", ";
 	}
@@ -66,15 +68,14 @@ void printHeader(long index, int byte_in_code, int code_offset)
 	{
 		s_in[0] = code_offset + (index / 94);
 		s_in[1] = 0xA1 + (index % 94);
+		convertCode(s_in, 8, s_out, 8);
 		cout << "(GB2312)" << byteString(s_in[0]);
 		cout << byteStringPure(s_in[1]) << ", ";
 		cout << "(UTF-8)" << byteString(s_out[0]) << byteStringPure(s_out[1])
-				<< byteStringPure(s_out[2]);
+				<< byteStringPure(s_out[2]) << ", ";
 	}
 
-	convertCode(s_in, 8, s_out, 8);
-
-	cout << ", \" " << s_out << " \"";
+	cout << "\" " << s_out << " \"";
 }
 
 void printVar(unsigned char *p, int length)
@@ -117,13 +118,13 @@ int main(int argc, char* argv[])
 	int code_offset;
 	sscanf(argv[5], "0x%02X", &code_offset);
 
-	//cout << "BitmapFont" << endl; // prints !!!Hello World!!!
-	//	cout << argv[1] << ", ";
-	//	cout << argv[2] << ", ";
-	//	cout << length << ", ";
-	//	cout << byteString(byte_in_row) << ", ";
-	//	cout << byteString(byte_in_code) << ", ";
-	//	cout << byteString(code_offset) << endl;
+//cout << "BitmapFont" << endl; // prints !!!Hello World!!!
+//	cout << argv[1] << ", ";
+//	cout << argv[2] << ", ";
+//	cout << length << ", ";
+//	cout << byteString(byte_in_row) << ", ";
+//	cout << byteString(byte_in_code) << ", ";
+//	cout << byteString(code_offset) << endl;
 
 	unsigned char *p = new unsigned char[length];
 
