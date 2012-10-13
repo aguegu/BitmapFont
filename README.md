@@ -1,27 +1,18 @@
 BitmapFont
 ==========
 
-decode bitmap fonts, as 
+decode bitmap fonts (in font/), as 
 
-	ASC12
-	ASC16
-	ASC48
+	ASC12	ASC16 	ASC48
 	HZK12
 	HZK14
 	HZK16
-	HZK16F
-	HZK16S
-	HZK24F
-	HZK24H
-	HZK24K
-	HZK24S
+	HZK16F 	HZK16S
+	HZK24F	HZK24H	HZK24K	HZK24S
 	HZK24T
 	HZK32
-	HZK40S
-	HZK40T
-	HZK48
-	HZK48S
-	HZK48T
+	HZK40S	HZK40T
+	HZK48	HZK48S	HZK48T
 
 ------
 
