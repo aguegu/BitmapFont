@@ -29,40 +29,44 @@ const char c_off[] =
 int convertCode(char *inbuf, unsigned long inlen, char *outbuf,
 		unsigned long outlen)
 {
-	iconv_t cd;
 	char **pin = &inbuf;
 	char **pout = &outbuf;
+	iconv_t cd = iconv_open("UTF-8", "GB2312");
 
-	cd = iconv_open("UTF-8", "GB2312");
-	if (cd == 0)
-		return -1;
 	memset(outbuf, 0, outlen);
-	if (iconv(cd, pin, &inlen, pout, &outlen) == (size_t) (-1))
+
+	if (cd == 0 || iconv(cd, pin, &inlen, pout, &outlen) == (size_t) (-1))
 		return -1;
+
 	iconv_close(cd);
 	return 0;
 }
 
-char* byteString(unsigned char c)
+string byteStringPure(unsigned char c)
 {
-	char *tmp = new char[5];
-	sprintf(tmp, "0x%02x", c);
-	return tmp;
-}
-
-char *byteStringPure(unsigned char c)
-{
-	char *tmp = new char[3];
+	char tmp[3];
 	sprintf(tmp, "%02x", c);
-	return tmp;
+	string ref(tmp);
+	return ref;
 }
 
-void printHeader(long index, int byte_in_code, int code_offset)
+string byteString(unsigned char c)
+{
+	string tmp("0x");
+	tmp += byteStringPure(c);
+	return tmp;	
+}
+
+void printHeader(long pos, int length, int byte_in_code, int code_offset)
 {
 	char s_in[8] =
 	{ 0 };
 	char s_out[8] =
 	{ 0 };
+
+	long index = pos / length - 1;
+	cout << "// 0x" << pos;
+	cout << ", 0x" << index << ", ";
 
 	if (byte_in_code == 1)
 	{
@@ -134,12 +138,8 @@ int main(int argc, char* argv[])
 	while (fin.read((char *) p, length))
 	{
 		long pos = fin.tellg();
-		long index = pos / length - 1;
 
-		cout << "// 0x" << pos;
-		cout << ", 0x" << index << ", ";
-
-		printHeader(index, byte_in_code, code_offset);
+		printHeader(pos, length, byte_in_code, code_offset);
 		cout << endl;
 
 		printVar(p, length);
