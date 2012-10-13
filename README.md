@@ -13,21 +13,18 @@ Print out info header, hex output, pattern view for each to character in bitmap 
 	HZK48	HZK48S	HZK48T
 
 ##Download
-	$ git://github.com/aguegu/BitmapFont.git
+	$ git clone git://github.com/aguegu/BitmapFont.git
 
 ##Build
 	$ make 
 
 ##Use
-	$ make font_name
-
-ex. make ASC12, make HZK32
 to get the pattern list text in UTF-8 of the font_name Font in output/, named font_name.txt
-
-
-	$ make all
+	$ make font_name
+ex. make ASC12, make HZK32
 
 to all pattern list (UTF-8) for all the fonts in output/
+	$ make all
 
 ##Cleanup
 	$ make clean
