@@ -1,9 +1,16 @@
 //============================================================================
 // Name        : BitmapFont.cpp
-// Author      : aGuegu
-// Version     :
-// Copyright   : @aguegu.net
-// Description : BitmapFont
+// Description : Print out info header, hex output, pattern view for each to 
+//               character in a bitmap font file. hope to help programming 
+//               character display stored in arrays, especially for micro 
+//               controller system.
+// Version     : 1.0
+// Copyright   : Attribution-NonCommercial 3.0 Unported (CC BY-NC 3.0) 
+// 	             http://creativecommons.org/licenses/by-nc/3.0/
+// Author      : Weihong Guan (@aGuegu)
+// Email       : weihong.guan@gmail.com
+// Blog        : http://aguegu.net
+// Host        : https://github.com/aguegu/BitmapFont
 //============================================================================
 
 #include <iostream>
@@ -36,7 +43,7 @@ int convertCode(char *inbuf, unsigned long inlen, char *outbuf,
 	return 0;
 }
 
-char *byteString(unsigned char c)
+char* byteString(unsigned char c)
 {
 	char *tmp = new char[5];
 	sprintf(tmp, "0x%02x", c);
