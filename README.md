@@ -1,6 +1,7 @@
 BitmapFont
 ==========
 
+Print out info header, hex output, pattern view for each to character in bitmap font files, list below. Hope to help programming character display stored in arrays, especially for micro controller system.
 decode bitmap fonts (in font/), as 
 
 	ASC12	ASC16 	ASC48
@@ -13,7 +14,6 @@ decode bitmap fonts (in font/), as
 	HZK40S	HZK40T
 	HZK48	HZK48S	HZK48T
 
-print out info header, hex output, pattern view for each to character in a bitmap font file. hope to help programming character display stored in arrays, especially for micro controller system.
 ------
 
 $ make 
