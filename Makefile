@@ -14,15 +14,17 @@ $(TARGET): $(OBJECTS)
 %.o: %.cpp
 	$(CC) $(CFLAGS) $< -o $@
 
-hackfont: HackFont.o
+HackFont: HackFont.o BitmapFont
 	$(CC) HackFont.o -o $@
 	./$@ font/HZK16 font/HZK16_0
-	./BitmapFont font/HZK16_0 32 2 2 0xA1 > output/HZK16_0
+	mkdir -p output/
+	./BitmapFont font/HZK16_0 32 2 2 0xA1 > output/HZK16_0.txt
 
 all:$(FONTS)
 
 clean:
 	rm -rfv $(OBJECTS) $(TARGET)
+	rm -f HackFont.o HackFont
 	rm -rfv output/
 	
 ASC12: FONT_NAME = ASC12
