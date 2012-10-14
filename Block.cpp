@@ -1,10 +1,10 @@
 #include "Block.h"
 
-Block::Block(int length) :
-		_length(length)
+Block::Block(char *p, int length) :
+		_p((byte *)p), _length(length), 
+		_row_count(sqrt(_length * 8)), _byte_in_row(_length / _row_count)
 {
-	_row_count = sqrt(_length * 8);
-	_byte_in_row = _length / _row_count;
+	_move = &Block::moveBitInRowPosi;
 }
 
 Block::~Block()
@@ -72,14 +72,9 @@ void Block::reverseInDiag()
 			p++;
 		}
 	}
+
 	memcpy(_p, cache, _length);
-
 	delete[] cache;
-}
-
-void Block::setArray(char *p)
-{
-	_p = (byte *) p;
 }
 
 void Block::moveBitInColNega(bool recycle)
@@ -194,5 +189,27 @@ void Block::rotate(Rotation r)
 		break;
 	default:
 		break;
+	}
+}
+
+void Block::opposite()
+{
+	byte *p = _p;
+	int i = _length;
+	while (i--)
+	{
+		*p = ~*p;
+		p++;
+	}
+}
+
+void Block::reverse()
+{
+	byte *p = _p;
+	int i = _length;
+	while (i--)
+	{
+		*p = reverseByte(*p);
+		p++;
 	}
 }

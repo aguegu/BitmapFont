@@ -24,17 +24,17 @@ int main(int argc, char* argv[])
 	char * p = new char[length];
 	while(fin.read(p, length))
 	{
-		Block block(length);
-		block.setArray(p);
+		Block block(p, length);
 
 		//block.reverseInRow();
 		//block.reverseInCol();
 //		block.reverseInDiag();
 		//block.setMoveDirection(Block::BIT_IN_ROW_NEGA);
-		//block.move();
+		block.move();
 
 		block.rotate(Block::R90);
-
+		block.opposite();
+		block.reverse();
 
 		fout.write(p, length);
 		fout.flush();

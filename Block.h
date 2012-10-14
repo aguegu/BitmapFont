@@ -15,15 +15,19 @@ using namespace std;
 #define bitWrite(x, n, b) ((b)? bitSet((x),(n)) : bitClear((x), (n)))
 
 const char REVERSE[] =
-{ 0x00, 0x08, 0x04, 0x0c, 0x02, 0x0a, 0x06, 0x0e, 0x01, 0x09, 0x05, 0x0d, 0x03,
-		0x0b, 0x07, 0x0f };
+{ 
+	0x00, 0x08, 0x04, 0x0c, 
+	0x02, 0x0a, 0x06, 0x0e, 
+	0x01, 0x09, 0x05, 0x0d, 
+	0x03, 0x0b, 0x07, 0x0f,
+};
 
 class Block
 {
 public:
-	Block(int length);
+	Block(char *p, int length);
 	virtual ~Block();
-	void setArray(char *p);
+
 	void reverseInRow();
 	void reverseInCol();
 	void reverseInDiag();
@@ -44,14 +48,16 @@ public:
 	void move(bool recycle = false);
 	void setMoveDirection(Direction d);
 	void rotate(Rotation r);
-
-private:
-	const int _length;
-	int _row_count;
-	int _byte_in_row;
-
-	byte *_p;
+	void opposite();
+	void reverse();
+	
 	static byte reverseByte(byte c);
+private:
+	byte * const _p;
+	const int _length;
+	const int _row_count;
+	const int _byte_in_row;
+
 	void reverseArrayInBit(byte *destination, byte *source, int length);
 
 	void moveBitInColNega(bool recycle);
