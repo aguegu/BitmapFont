@@ -7,12 +7,14 @@
 typedef unsigned char byte;
 using namespace std;
 
+#ifndef _BIT_WRITE_
 #define _BV(n) (0x01U << (n))
 #define _LV(n) (~_BV(n))
 #define bitRead(x, n) ((x) & _BV(n))
 #define bitSet(x, n) ((x) |= _BV(n))
 #define bitClear(x, n) ((x) &= _LV(n))
 #define bitWrite(x, n, b) ((b)? bitSet((x),(n)) : bitClear((x), (n)))
+#endif
 
 const char REVERSE[] =
 { 
