@@ -3,6 +3,7 @@ font_hack/
 BitmapFont
 HackFont
 *.*~
+*.swp
 .project
 .cproject
 

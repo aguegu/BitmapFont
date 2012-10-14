@@ -23,21 +23,55 @@ void Block::reverseArrayInBit(byte *destination, byte *source, int length)
 		destination[i] = reverseByte(source[length - 1 - i]);
 }
 
-void Block::reverseBlockInRow()
+void Block::reverseInRow()
 {
-	byte * q = new byte[_byte_in_row];
-	for (int i = 0; i < _row_count; i++)
+	byte * cache = new byte[_byte_in_row];
+	byte * p = _p;
+	for (int i = 0; i < _row_count; i++, p += _byte_in_row)
 	{
-		int indent = _byte_in_row * i;
-		reverseArrayInBit(q, _p + indent, _byte_in_row);
-		memcpy(_p + indent, q, _byte_in_row);
+		reverseArrayInBit(cache, p, _byte_in_row);
+		memcpy(p, cache, _byte_in_row);
 	}
-	delete[] q;
+	delete[] cache;
 }
 
-void Block::reverseBlockInCol()
+void Block::reverseInCol()
 {
+	byte * cache = new byte[_byte_in_row];
+	byte * p = _p;
+	byte * q = _p + _length - _byte_in_row;
 
+	for (int i = 0; i < _row_count; i++, i++)
+	{
+		memcpy(cache, p, _byte_in_row);
+		memcpy(p, q, _byte_in_row);
+		memcpy(q, cache, _byte_in_row);
+		p += _byte_in_row;
+		q -= _byte_in_row;
+	}
+	delete[] cache;
+}
+
+void Block::reverseInDiag()
+{
+	byte * cache = new byte[_length];
+	memset(cache, 0x00, _length);
+
+	for (int i=0; i < _length; i++)
+	{
+		int r = i / _byte_in_row;
+
+		for (int j=0; j<8; j++)
+		{
+			int c = (i % _byte_in_row) * 8 + 7-j;
+			int index = c * _byte_in_row + r / 8;
+			if (_p[i] & _BV(j))
+			    cache[index] |= _BV(7-r%8);
+		}
+	}
+	memcpy(_p, cache, _length);
+
+	delete[] cache;
 }
 
 void Block::setArray(char *p)

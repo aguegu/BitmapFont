@@ -7,6 +7,9 @@
 typedef unsigned char byte;
 using namespace std;
 
+#define _BV(n) (0x01U << (n))
+#define _LV(n) (~_BV(n))
+
 const char REVERSE[] =
 {
 	0x00, 0x08, 0x04, 0x0c,
@@ -21,8 +24,9 @@ class Block
 		Block(int length);
 		virtual	~Block();
 		void setArray(char *p);
-		void reverseBlockInRow();
-		void reverseBlockInCol();
+		void reverseInRow();
+		void reverseInCol();
+		void reverseInDiag();
 
 	private:
 		const int _length;

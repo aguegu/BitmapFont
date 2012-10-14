@@ -26,7 +26,10 @@ int main(int argc, char* argv[])
 	{
 		Block block(length);
 		block.setArray(p);
-		block.reverseBlockInRow();
+
+		//block.reverseInRow();
+		//block.reverseInCol();
+		block.reverseInDiag();
 
 		fout.write(p, length);
 		fout.flush();
