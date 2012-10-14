@@ -29,7 +29,12 @@ int main(int argc, char* argv[])
 
 		//block.reverseInRow();
 		//block.reverseInCol();
-		block.reverseInDiag();
+//		block.reverseInDiag();
+		//block.setMoveDirection(Block::BIT_IN_ROW_NEGA);
+		//block.move();
+
+		block.rotate(Block::R90);
+
 
 		fout.write(p, length);
 		fout.flush();
