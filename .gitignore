@@ -2,6 +2,8 @@ output/
 BitmapFont
 HackFont
 *.*~
+.project
+.cproject
 
 # Compiled Object files
 *.slo

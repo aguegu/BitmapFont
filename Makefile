@@ -14,18 +14,35 @@ $(TARGET): $(OBJECTS)
 %.o: %.cpp
 	$(CC) $(CFLAGS) $< -o $@
 
-HackFont: HackFont.o BitmapFont
-	$(CC) HackFont.o -o $@
-	./$@ font/HZK16 font/HZK16_0
-	mkdir -p output/
-	./BitmapFont font/HZK16_0 32 2 2 0xA1 > output/HZK16_0.txt
+SOURCES_HACK = HackFont.cpp Block.cpp
+OBJECTS_HACK = $(SOURCES_HACK:.cpp=.o)
+TARGET_HACK = HackFont
 
-all:$(FONTS)
+$(TARGET_HACK): $(OBJECTS_HACK)
+	$(CC) $(OBJECTS_HACK) -o $@
+
+#HackFont: HackFont.o BitmapFont
+#	$(CC) HackFont.o -o $@
+#	./$@ font/HZK16 font/HZK16_0
+#	mkdir -p output/
+#	./BitmapFont font/HZK16_0 32 2 2 0xA1 > output/HZK16_0.txt
+
+allfonts:$(FONTS)
+
+all: $(TARGET_HACK) $(TARGET)
+
+hackfont:$(TARGET_HACK) $(TARGET)
+	mkdir -p font_hack/
+	./$< font/HZK16 font_hack/HZK16_0
+	mkdir -p output/	
+	./BitmapFont font_hack/HZK16_0 32 2 2 0xA1 > output/HZK16_0.txt
 
 clean:
 	rm -rfv $(OBJECTS) $(TARGET)
+	rm -rfv $(OBJECTS_HACK) $(TARGET_HACK)
 	rm -f HackFont.o HackFont
 	rm -rfv output/
+	rm -rfv font_hack/
 	
 ASC12: FONT_NAME = ASC12
 ASC12: FONT_LENGTH = 12

@@ -27,7 +27,7 @@ ex. make ASC12, make HZK32
 
 Get pattern lists (UTF-8) for all the fonts in output/
 
-	$ make all
+	$ make allfonts
 
 ##Cleanup
 	$ make clean
