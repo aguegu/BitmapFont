@@ -39,8 +39,7 @@ hackfont:$(TARGET_HACK) $(TARGET)
 
 clean:
 	rm -rfv $(OBJECTS) $(TARGET)
-	rm -rfv $(OBJECTS_HACK) $(TARGET_HACK)
-	rm -f HackFont.o HackFont
+	rm -rfv $(OBJECTS_HACK) $(TARGET_HACK)	
 	rm -rfv output/
 	rm -rfv font_hack/
 	
