@@ -1,3 +1,19 @@
+// HackFont does not support non-square font right now.
+// supports HZK16, HZK32, HZK24, HZK32, HZK40, HZK48
+//
+// command format:
+// ./HackFont [source_font] [destination_font] [argv_shift] [argv_movedirection] [argv_step]
+//
+// argv_shift - bit7: byte_reverse, bit6: opposite, bit5: 270, bit4: 180, bit3: 90, 
+// 				bit2: reverse_diagonal, bit1: reverse_column, bit0: reverse_row
+//
+// argv_movedirection - 0x01: Column +, right
+// 						0x02: Column -, left
+// 						0x04: Row +, down
+// 						0x08: Row -, up
+//
+// argv_step: how may step you want to move in the [argv_movedirection]
+
 #include <iostream>
 #include <fstream>
 #include <cstring>
@@ -9,7 +25,6 @@ typedef unsigned char byte;
 
 void shiftBlock(Block & block, int shift)
 {
-
 	if (bitRead(shift, 0))
 		block.reverseInRow();
 	if (bitRead(shift, 1))	
@@ -22,6 +37,10 @@ void shiftBlock(Block & block, int shift)
 		block.rotate(Block::R180);
 	if (bitRead(shift, 5))
 		block.rotate(Block::R270);
+	if (bitRead(shift, 6))
+		block.opposite();
+	if (bitRead(shift, 7))
+		block.reverse();
 }
 
 void moveBlock(Block & block, int direction, int step)
@@ -62,7 +81,6 @@ int main(int argc, char* argv[])
 	int shift = atoi(argv[3]);
 	int move = atoi(argv[4]);
 	int step = atoi(argv[5]);
-	int opposite = atoi(argv[6]);
 
 	ifstream fin(argv[1], ios::binary);
 	ofstream fout(argv[2], ios::binary);
@@ -74,11 +92,6 @@ int main(int argc, char* argv[])
 		
 		shiftBlock(block, shift);
 		moveBlock(block, move, step);
-
-		if (bitRead(opposite, 0))
-			block.opposite();
-		if (bitRead(opposite, 1))
-			block.reverse();
 
 		fout.write(p, length);
 		fout.flush();

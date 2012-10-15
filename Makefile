@@ -21,21 +21,15 @@ TARGET_HACK = HackFont
 $(TARGET_HACK): $(OBJECTS_HACK)
 	$(CC) $(OBJECTS_HACK) -o $@
 
-#HackFont: HackFont.o BitmapFont
-#	$(CC) HackFont.o -o $@
-#	./$@ font/HZK16 font/HZK16_0
-#	mkdir -p output/
-#	./BitmapFont font/HZK16_0 32 2 2 0xA1 > output/HZK16_0.txt
-
 allfonts:$(FONTS)
 
 all: $(TARGET_HACK) $(TARGET)
 
 hackfont:$(TARGET_HACK) $(TARGET)
 	mkdir -p font_hack/
-	./$< font/HZK16 font_hack/HZK16_0 19 17 1 1
+	./$< font/HZK16 font_hack/HZK16_0 19 17 1
 	mkdir -p output/	
-	./BitmapFont font_hack/HZK16_0 32 2 2 0xA1 > output/HZK16_0.txt
+	./BitmapFont font_hack/HZK16_0 2 > output/HZK16_0.txt
 
 clean:
 	rm -rfv $(OBJECTS) $(TARGET)
