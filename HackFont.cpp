@@ -78,9 +78,10 @@ int main(int argc, char* argv[])
 	int byte_in_row = row_count / 8;
 	int length = byte_in_row * row_count;
 
-	int shift = atoi(argv[3]);
-	int move = atoi(argv[4]);
-	int step = atoi(argv[5]);
+	int shift, move, step; 
+	sscanf(argv[3], "0x%02x", &shift);   
+	sscanf(argv[4], "0x%02x", &move);
+	sscanf(argv[5], "0x%02x", &step);
 
 	ifstream fin(argv[1], ios::binary);
 	ofstream fout(argv[2], ios::binary);

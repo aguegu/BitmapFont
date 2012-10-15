@@ -27,7 +27,7 @@ all: $(TARGET_HACK) $(TARGET)
 
 hackfont:$(TARGET_HACK) $(TARGET)
 	mkdir -p font_hack/
-	./$< font/HZK16 font_hack/HZK16_0 19 17 1
+	./$< font/HZK16 font_hack/HZK16_0 0x49 0x01 0x01
 	mkdir -p output/	
 	./BitmapFont font_hack/HZK16_0 2 > output/HZK16_0.txt
 
