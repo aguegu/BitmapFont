@@ -57,7 +57,7 @@ string byteString(unsigned char c)
 	return tmp;	
 }
 
-void printHeader(long pos, int length, int byte_in_code, int code_offset)
+void printHeader(long pos, int length, bool is_dword)
 {
 	char s_in[8] =
 	{ 0 };
@@ -68,22 +68,22 @@ void printHeader(long pos, int length, int byte_in_code, int code_offset)
 	cout << "// 0x" << pos;
 	cout << ", 0x" << index << ", ";
 
-	if (byte_in_code == 1)
+	if (is_dword)
 	{
-		s_in[0] = index + code_offset;
-		convertCode(s_in, 8, s_out, 8);
-		cout << "(GB2312)" << byteString(s_in[0]) << ", ";
-		cout << "(UTF-8)" << byteString(s_in[0]) << ", ";
-	}
-	else
-	{
-		s_in[0] = code_offset + (index / 94);
+		s_in[0] = 0xA1 + (index / 94);
 		s_in[1] = 0xA1 + (index % 94);
 		convertCode(s_in, 8, s_out, 8);
 		cout << "(GB2312)" << byteString(s_in[0]);
 		cout << byteStringPure(s_in[1]) << ", ";
 		cout << "(UTF-8)" << byteString(s_out[0]) << byteStringPure(s_out[1])
-				<< byteStringPure(s_out[2]) << ", ";
+			<< byteStringPure(s_out[2]) << ", ";
+	}
+	else
+	{
+		s_in[0] = index;
+		convertCode(s_in, 8, s_out, 8);
+		cout << "(GB2312)" << byteString(s_in[0]) << ", ";
+		cout << "(UTF-8)" << byteString(s_in[0]) << ", ";
 	}
 
 	cout << "\" " << s_out << " \"";
@@ -123,23 +123,28 @@ void printPattern(char *p, int length, int byte_in_row)
 
 int main(int argc, char* argv[])
 {
-	int length = atoi(argv[2]);
-	int byte_in_row = atoi(argv[3]);
-	int byte_in_code = atoi(argv[4]);
-	int code_offset;
-	sscanf(argv[5], "0x%02X", &code_offset);
+	int byte_in_row = atoi(argv[2]);
 
-	char *p = new char[length];
+	char code_sys[4];
+	int row_count, length;
+	bool is_dword;
+
+	sscanf(argv[1], "%*[^/]/%3s%d", code_sys, &row_count);
+
+	length = byte_in_row * row_count;
+
+	is_dword = strcmp(code_sys, "ASC");
 
 	ifstream fin(argv[1], ios::binary);
 
 	cout << hex;
 
+	char *p = new char[length];
 	while (fin.read(p, length))
 	{
 		long pos = fin.tellg();
 
-		printHeader(pos, length, byte_in_code, code_offset);
+		printHeader(pos, length, is_dword);
 		cout << endl;
 
 		printVar(p, length);
