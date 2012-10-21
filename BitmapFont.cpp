@@ -21,9 +21,9 @@
 
 using namespace std;
 
-const char c_on[] =
+const unsigned char c_on[] =
 { 0xe2, 0x96, 0xa0, 0x20 };
-const char c_off[] =
+const unsigned char c_off[] =
 { 0xe2, 0x96, 0xa1, 0x20 };
 
 int convertCode(char *inbuf, unsigned long inlen, char *outbuf,
@@ -112,7 +112,7 @@ void printPattern(char *p, int length, int byte_in_row)
 			unsigned char temp = p[i];
 			for (int j = 8; j--;)
 			{
-				cout.write(temp >= 0x80 ? c_on : c_off, 4);
+				cout.write(temp >= 0x80 ? (char *)c_on : (char *)c_off, 4);
 				temp <<= 1;
 			}
 			i++;
