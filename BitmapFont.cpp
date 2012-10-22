@@ -144,7 +144,7 @@ int main(int argc, char* argv[])
 	{
 		long pos = fin.tellg();
 
-		printHeader(pos, length, is_dword);
+		printHeader(pos - length, length, is_dword);
 		cout << endl;
 
 		printVar(p, length);
