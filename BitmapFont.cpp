@@ -65,7 +65,7 @@ void printHeader(long pos, int length, bool is_dword)
 	{ 0 };
 
 	long index = pos / length - 1;
-	cout << "// 0x" << pos;
+	cout << "// 0x" << pos - length;
 	cout << ", 0x" << index << ", ";
 
 	if (is_dword)
@@ -144,7 +144,7 @@ int main(int argc, char* argv[])
 	{
 		long pos = fin.tellg();
 
-		printHeader(pos - length, length, is_dword);
+		printHeader(pos, length, is_dword);
 		cout << endl;
 
 		printVar(p, length);
