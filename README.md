@@ -2,15 +2,17 @@
 
 Print out info header, hex output, pattern view for each to character in bitmap font files list below. Hope to help programming character display stored in arrays, especially for micro controller system.
 
+blog related: http://aguegu.net/?p=1279
+
+fonts include:
 	ASC12	ASC16 	ASC48
 	HZK12
 	HZK14
-	HZK16
-	HZK16F 	HZK16S
-	HZK24F	HZK24H	HZK24K	HZK24S	HZK24T
+	HZK16	HZK16F 	HZK16S
+	HZK24F	HZK24H	HZK24K	HZK24S
 	HZK32
-	HZK40S	HZK40T
-	HZK48	HZK48S	HZK48T
+	HZK40
+	HZK48
 
 ##Download
 	$ git clone git://github.com/aguegu/BitmapFont.git
