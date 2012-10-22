@@ -5,6 +5,7 @@ Print out info header, hex output, pattern view for each to character in bitmap 
 blog related: http://aguegu.net/?p=1279
 
 fonts include:
+
 	ASC12	ASC16 	ASC48
 	HZK12
 	HZK14
