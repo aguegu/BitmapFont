@@ -17,7 +17,7 @@ length=$((length - 1))
 #y=$(od -t x1 -N 1 -j 1 /tmp/gbk_$$.txt | head -1 | awk '{print $2}')
 #echo $((16#$y))
 
-./SearchFont font/HZK16 /tmp/gbk_$$.txt
+./SearchFont font/HZK48 /tmp/gbk_$$.txt
 
 rm /tmp/utf8_$$.txt
 rm /tmp/gbk_$$.txt
