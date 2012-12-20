@@ -54,6 +54,7 @@ public:
 	void reverse();
 	
 	static byte reverseByte(byte c);
+
 private:
 	byte * const _p;
 	const int _length;
