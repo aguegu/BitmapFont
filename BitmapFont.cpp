@@ -18,13 +18,9 @@
 #include <fstream>
 #include <cstdlib>
 #include <cstring>
+#include "Block.h"
 
 using namespace std;
-
-const unsigned char c_on[] =
-{ 0xe2, 0x96, 0xa0, 0x20 };
-const unsigned char c_off[] =
-{ 0xe2, 0x96, 0xa1, 0x20 };
 
 int convertCode(char *inbuf, unsigned long inlen, char *outbuf,
 		unsigned long outlen)
@@ -40,21 +36,6 @@ int convertCode(char *inbuf, unsigned long inlen, char *outbuf,
 
 	iconv_close(cd);
 	return 0;
-}
-
-string byteStringPure(unsigned char c)
-{
-	char tmp[3];
-	sprintf(tmp, "%02x", c);
-	string ref(tmp);
-	return ref;
-}
-
-string byteString(unsigned char c)
-{
-	string tmp("0x");
-	tmp += byteStringPure(c);
-	return tmp;	
 }
 
 void printHeader(long pos, int length, bool is_dword)
@@ -73,53 +54,22 @@ void printHeader(long pos, int length, bool is_dword)
 		s_in[0] = 0xA1 + (index / 94);
 		s_in[1] = 0xA1 + (index % 94);
 		convertCode(s_in, 8, s_out, 8);
-		cout << "(GB2312)" << byteString(s_in[0]);
-		cout << byteStringPure(s_in[1]) << ", ";
-		cout << "(UTF-8)" << byteString(s_out[0]) << byteStringPure(s_out[1])
-			<< byteStringPure(s_out[2]) << ", ";
+		cout << "(GB2312)" << Block::byteString(s_in[0]);
+		cout << Block::byteStringPure(s_in[1]) << ", ";
+		cout << "(UTF-8)" << Block::byteString(s_out[0]) << Block::byteStringPure(s_out[1])
+			<< Block::byteStringPure(s_out[2]) << ", ";
 	}
 	else
 	{
 		s_in[0] = index;
 		convertCode(s_in, 8, s_out, 8);
-		cout << "(GB2312)" << byteString(s_in[0]) << ", ";
-		cout << "(UTF-8)" << byteString(s_in[0]) << ", ";
+		cout << "(GB2312)" << Block::byteString(s_in[0]) << ", ";
+		cout << "(UTF-8)" << Block::byteString(s_in[0]) << ", ";
 	}
 
 	cout << "\" " << s_out << " \"";
 }
 
-void printVar(char *p, int length)
-{
-	for (int i = 0; i < length; i++)
-	{
-		cout << byteString(p[i]);
-		cout << ", ";
-
-		if (i % 8 == 7)
-			cout << endl;
-	}
-}
-
-void printPattern(char *p, int length, int byte_in_row)
-{
-	for (int i = 0; i < length;)
-	{
-		cout << "//  ";
-
-		for (int k = byte_in_row; k--;)
-		{
-			unsigned char temp = p[i];
-			for (int j = 8; j--;)
-			{
-				cout.write(temp >= 0x80 ? (char *)c_on : (char *)c_off, 4);
-				temp <<= 1;
-			}
-			i++;
-		}
-		cout << endl;
-	}
-}
 
 int main(int argc, char* argv[])
 {
@@ -147,10 +97,12 @@ int main(int argc, char* argv[])
 		printHeader(pos, length, is_dword);
 		cout << endl;
 
-		printVar(p, length);
+		Block block(p, length);
+
+		cout << block.getVarString();
 		cout << endl;
 
-		printPattern(p, length, byte_in_row);
+		cout << block.getPatternString();
 		cout << endl;
 
 		cout.flush();

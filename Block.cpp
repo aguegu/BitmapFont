@@ -1,8 +1,8 @@
 #include "Block.h"
 
 Block::Block(char *p, int length) :
-		_p((byte *)p), _length(length), 
-		_row_count(sqrt(_length * 8)), _byte_in_row(_length / _row_count)
+		_p((byte *) p), _length(length), _row_count(sqrt(_length * 8)), _byte_in_row(
+				_length / _row_count)
 {
 	_move = &Block::moveBitInRowPosi;
 }
@@ -213,3 +213,57 @@ void Block::reverse()
 		p++;
 	}
 }
+
+string Block::byteStringPure(unsigned char c)
+{
+	char tmp[3];
+	sprintf(tmp, "%02x", c);
+	string ref(tmp);
+	return ref;
+}
+
+string Block::byteString(unsigned char c)
+{
+	string tmp("0x");
+	tmp += byteStringPure(c);
+	return tmp;
+}
+
+string Block::getVarString()
+{
+	string s;
+
+	for (int i = 0; i < _length; i++)
+	{
+		s += byteString(_p[i]) + ", ";
+		if (i % 8 == 7)
+			s += "\n";
+	}
+
+	return s;
+}
+
+string Block::getPatternString()
+{
+	string s;
+
+	for (int i = 0; i < _length;)
+	{
+		s += "//  ";
+
+		for (int k = _byte_in_row; k--;)
+		{
+			unsigned char temp = _p[i];
+			for (int j = 8; j--;)
+			{
+				s.append(temp >= 0x80 ? (char *) c_on : (char *) c_off, 4);
+				temp <<= 1;
+			}
+			i++;
+		}
+		s += "\n";
+	}
+
+	return s;
+}
+
