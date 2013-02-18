@@ -18,6 +18,7 @@
 #include <fstream>
 #include <cstdlib>
 #include <cstring>
+#include <unistd.h>
 #include "block.h"
 
 int convertCode(char *inbuf, unsigned long inlen, char *outbuf,
@@ -68,21 +69,34 @@ void printHeader(long pos, int length, bool is_dword)
 	std::cout << "\" " << s_out << " \"";
 }
 
-int main(int argc, char* argv[])
+int main(int argc, char ** argv)
 {
-	int byte_in_row = atoi(argv[2]);
+	int opt;
+	int byte_in_row = 1;
+	int row_count;
+	char code_sys[4] = "\0";
+	char *file_font = NULL;
+	
+	while ((opt = getopt(argc, argv, ":f:c:")) != -1) {
+		switch (opt) {
+			case 'f':
+				sscanf(optarg, "%*[^/]/%3s%d", code_sys, &row_count);
+				file_font = optarg;
+				break;
+			case 'c':
+				byte_in_row = atoi(optarg);
+				break;
+			case '?':
+				fprintf(stderr, "unknown option: %c\n", optopt);
+				exit(1);
+				break;
+		}
+	}
 
-	char code_sys[4];
-	int row_count, length;
-	bool is_dword;
+	int length = byte_in_row * row_count;
+	bool is_dword = strcmp(code_sys, "ASC");
 
-	sscanf(argv[1], "%*[^/]/%3s%d", code_sys, &row_count);
-
-	length = byte_in_row * row_count;
-
-	is_dword = strcmp(code_sys, "ASC");
-
-	std::ifstream fin(argv[1], std::ios::binary);
+	std::ifstream fin(file_font, std::ios::binary);
 
 	std::cout << std::hex;
 
@@ -96,11 +110,8 @@ int main(int argc, char* argv[])
 
 		Block block(p, length, byte_in_row);
 
-		std::cout << block.getVarString();
-		std::cout << std::endl;
-
-		std::cout << block.getPatternString();
-		std::cout << std::endl;
+		std::cout << block.getVarString() << std::endl;
+		std::cout << block.getPatternString() << std::endl;
 
 		std::cout.flush();
 	}
@@ -109,5 +120,5 @@ int main(int argc, char* argv[])
 	
 	delete[] p;
 
-	return 0;
+	exit(EXIT_SUCCESS);
 }
