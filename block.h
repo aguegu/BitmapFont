@@ -17,7 +17,7 @@ typedef unsigned char byte;
 #define bitWrite(x, n, b) ((b)? bitSet((x),(n)) : bitClear((x), (n)))
 #endif
 
-const char REVERSE[] =
+static const char REVERSE[] =
 {	
 	0x00, 0x08, 0x04, 0x0c, 
 	0x02, 0x0a, 0x06, 0x0e, 
@@ -25,9 +25,9 @@ const char REVERSE[] =
 	0x03, 0x0b, 0x07, 0x0f,
 };
 
-const unsigned char c_on[] =
+static const unsigned char c_on[] =
 { 0xe2, 0x96, 0xa0, 0x20 };
-const unsigned char c_off[] =
+static const unsigned char c_off[] =
 { 0xe2, 0x96, 0xa1, 0x20 };
 
 class Block
