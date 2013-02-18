@@ -1,9 +1,9 @@
 CC  = 	g++
 CFLAGS = -O2 -g -Wall -c
 
-SOURCES = BitmapFont.cpp Block.cpp
+SOURCES = bitmapfont.cpp block.cpp
 OBJECTS = $(SOURCES:.cpp=.o)
-TARGET = BitmapFont 
+TARGET = bitmapfont 
 FONTS = ASC12 ASC16 ASC48 HZK12 HZK14 HZK16 HZK16F HZK16S HZK24F HZK24H HZK24K HZK24S HZK32 HZK40 HZK48
 
 :$(TARGET)
@@ -15,33 +15,34 @@ $(TARGET): $(OBJECTS)
 %.o: %.cpp
 	$(CC) $(CFLAGS) $< -o $@
 
-SOURCES_HACK = HackFont.cpp Block.cpp
+SOURCES_HACK = hackfont.cpp block.cpp
 OBJECTS_HACK = $(SOURCES_HACK:.cpp=.o)
-TARGET_HACK = HackFont
+TARGET_HACK = hackfont
 
 $(TARGET_HACK): $(OBJECTS_HACK)
 	$(CC) $(OBJECTS_HACK) -o $@
 
-SOURCES_SEARCH = SearchFont.cpp Block.cpp
+SOURCES_SEARCH = searchfont.cpp block.cpp
 OBJECTS_SEARCH = $(SOURCES_SEARCH:.cpp=.o)
-TARGET_SEARCH = SearchFont
+TARGET_SEARCH = searchfont
 
 $(TARGET_SEARCH): $(OBJECTS_SEARCH)
 	$(CC) $(OBJECTS_SEARCH) -o $@
 
 allfonts:$(FONTS)
 
-all: $(TARGET_HACK) $(TARGET) $(TARGET_SEARCH)
-
-hackfont:$(TARGET_HACK) $(TARGET)
+hf: $(TARGET_HACK) $(TARGET)
 	mkdir -p font_hack/
 	./$< font/HZK16 font_hack/HZK16_0 0x49 0x01 0x01
 	mkdir -p output/	
-	./BitmapFont font_hack/HZK16_0 2 > output/HZK16_0.txt
+	./bitmapfont font_hack/HZK16_0 2 > output/HZK16_0.txt
+
+all: $(TARGET_HACK) $(TARGET) $(TARGET_SEARCH)
 
 clean:
 	rm -rfv $(OBJECTS) $(TARGET)
 	rm -rfv $(OBJECTS_HACK) $(TARGET_HACK)	
+	rm -rfv $(OBJECTS_SEARCH) $(TARGET_SEARCH)
 	rm -rfv output/
 	rm -rfv font_hack/
 	
