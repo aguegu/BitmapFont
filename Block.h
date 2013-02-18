@@ -19,8 +19,12 @@ using namespace std;
 #endif
 
 const char REVERSE[] =
-{ 0x00, 0x08, 0x04, 0x0c, 0x02, 0x0a, 0x06, 0x0e, 0x01, 0x09, 0x05, 0x0d, 0x03,
-		0x0b, 0x07, 0x0f, };
+{	
+	0x00, 0x08, 0x04, 0x0c, 
+	0x02, 0x0a, 0x06, 0x0e, 
+	0x01, 0x09, 0x05, 0x0d, 
+	0x03, 0x0b, 0x07, 0x0f,
+};
 
 const unsigned char c_on[] =
 { 0xe2, 0x96, 0xa0, 0x20 };
@@ -31,7 +35,7 @@ class Block
 {
 public:
 
-	Block(char *p, int length);
+	Block(char *p, int length, int byte_in_row);
 	virtual ~Block();
 
 	void reverseInRow();
@@ -58,7 +62,6 @@ public:
 	static string byteStringPure(unsigned char c);
 	static string byteString(unsigned char c);
 
-
 	string getVarString();
 	string getPatternString();
 
@@ -66,8 +69,8 @@ private:
 
 	byte * const _p;
 	const int _length;
-	const int _row_count;
 	const int _byte_in_row;
+	const int _row_count;
 
 	void reverseArrayInBit(byte *destination, byte *source, int length);
 

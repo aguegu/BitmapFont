@@ -32,7 +32,7 @@ int main(int argc, char* argv[])
 
 		fFont.read(pattern, length);
 
-		Block block(pattern, length);
+		Block block(pattern, length, byte_in_row);
 
 		cout << block.getVarString();
 		cout << endl;

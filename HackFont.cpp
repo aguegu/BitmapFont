@@ -89,7 +89,7 @@ int main(int argc, char* argv[])
 	char * p = new char[length];
 	while(fin.read(p, length))
 	{
-		Block block(p, length);
+		Block block(p, length, byte_in_row);
 		
 		shiftBlock(block, shift);
 		moveBlock(block, move, step);

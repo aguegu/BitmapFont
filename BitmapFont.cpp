@@ -70,7 +70,6 @@ void printHeader(long pos, int length, bool is_dword)
 	cout << "\" " << s_out << " \"";
 }
 
-
 int main(int argc, char* argv[])
 {
 	int byte_in_row = atoi(argv[2]);
@@ -97,7 +96,7 @@ int main(int argc, char* argv[])
 		printHeader(pos, length, is_dword);
 		cout << endl;
 
-		Block block(p, length);
+		Block block(p, length, byte_in_row);
 
 		cout << block.getVarString();
 		cout << endl;

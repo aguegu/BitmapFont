@@ -1,8 +1,7 @@
 #include "Block.h"
 
-Block::Block(char *p, int length) :
-		_p((byte *) p), _length(length), _row_count(sqrt(_length * 8)), _byte_in_row(
-				_length / _row_count)
+Block::Block(char *p, int length, int byte_in_row) :
+		_p((byte *) p), _length(length), _byte_in_row(byte_in_row), _row_count(_length / byte_in_row)
 {
 	_move = &Block::moveBitInRowPosi;
 }
