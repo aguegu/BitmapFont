@@ -20,7 +20,6 @@
 #include "block.h"
 #include <cstdlib>
 
-using namespace std;
 typedef unsigned char byte;
 
 void shiftBlock(Block & block, int shift)
@@ -83,8 +82,8 @@ int main(int argc, char* argv[])
 	sscanf(argv[4], "0x%02x", &move);
 	sscanf(argv[5], "0x%02x", &step);
 
-	ifstream fin(argv[1], ios::binary);
-	ofstream fout(argv[2], ios::binary);
+	std::ifstream fin(argv[1], std::ios::binary);
+	std::ofstream fout(argv[2], std::ios::binary);
 
 	char * p = new char[length];
 	while (fin.read(p, length))

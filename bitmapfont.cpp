@@ -20,8 +20,6 @@
 #include <cstring>
 #include "block.h"
 
-using namespace std;
-
 int convertCode(char *inbuf, unsigned long inlen, char *outbuf,
 		unsigned long outlen)
 {
@@ -46,28 +44,28 @@ void printHeader(long pos, int length, bool is_dword)
 	{ 0 };
 
 	long index = pos / length - 1;
-	cout << "// 0x" << pos - length;
-	cout << ", 0x" << index << ", ";
+	std::cout << "// 0x" << pos - length;
+	std::cout << ", 0x" << index << ", ";
 
 	if (is_dword)
 	{
 		s_in[0] = 0xA1 + (index / 94);
 		s_in[1] = 0xA1 + (index % 94);
 		convertCode(s_in, 8, s_out, 8);
-		cout << "(GB2312)" << Block::byteString(s_in[0]);
-		cout << Block::byteStringPure(s_in[1]) << ", ";
-		cout << "(UTF-8)" << Block::byteString(s_out[0]) << Block::byteStringPure(s_out[1])
+		std::cout << "(GB2312)" << Block::byteString(s_in[0]);
+		std::cout << Block::byteStringPure(s_in[1]) << ", ";
+		std::cout << "(UTF-8)" << Block::byteString(s_out[0]) << Block::byteStringPure(s_out[1])
 			<< Block::byteStringPure(s_out[2]) << ", ";
 	}
 	else
 	{
 		s_in[0] = index;
 		convertCode(s_in, 8, s_out, 8);
-		cout << "(GB2312)" << Block::byteString(s_in[0]) << ", ";
-		cout << "(UTF-8)" << Block::byteString(s_in[0]) << ", ";
+		std::cout << "(GB2312)" << Block::byteString(s_in[0]) << ", ";
+		std::cout << "(UTF-8)" << Block::byteString(s_in[0]) << ", ";
 	}
 
-	cout << "\" " << s_out << " \"";
+	std::cout << "\" " << s_out << " \"";
 }
 
 int main(int argc, char* argv[])
@@ -84,9 +82,9 @@ int main(int argc, char* argv[])
 
 	is_dword = strcmp(code_sys, "ASC");
 
-	ifstream fin(argv[1], ios::binary);
+	std::ifstream fin(argv[1], std::ios::binary);
 
-	cout << hex;
+	std::cout << std::hex;
 
 	char *p = new char[length];
 	while (fin.read(p, length))
@@ -94,17 +92,17 @@ int main(int argc, char* argv[])
 		long pos = fin.tellg();
 
 		printHeader(pos, length, is_dword);
-		cout << endl;
+		std::cout << std::endl;
 
 		Block block(p, length, byte_in_row);
 
-		cout << block.getVarString();
-		cout << endl;
+		std::cout << block.getVarString();
+		std::cout << std::endl;
 
-		cout << block.getPatternString();
-		cout << endl;
+		std::cout << block.getPatternString();
+		std::cout << std::endl;
 
-		cout.flush();
+		std::cout.flush();
 	}
 
 	fin.close();

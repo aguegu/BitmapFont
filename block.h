@@ -7,7 +7,6 @@
 #include <cstdio>
 
 typedef unsigned char byte;
-using namespace std;
 
 #ifndef _BIT_WRITE_
 #define _BV(n) (0x01U << (n))
@@ -62,11 +61,11 @@ public:
 	void reverse();
 
 	static byte reverseByte(byte c);
-	static string byteStringPure(unsigned char c);
-	static string byteString(unsigned char c);
+	static std::string byteStringPure(unsigned char c);
+	static std::string byteString(unsigned char c);
 
-	string getVarString();
-	string getPatternString();
+	std::string getVarString();
+	std::string getPatternString();
 
 private:
 

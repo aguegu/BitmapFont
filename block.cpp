@@ -213,24 +213,24 @@ void Block::reverse()
 	}
 }
 
-string Block::byteStringPure(unsigned char c)
+std::string Block::byteStringPure(unsigned char c)
 {
 	char tmp[3];
 	sprintf(tmp, "%02x", c);
-	string ref(tmp);
+	std::string ref(tmp);
 	return ref;
 }
 
-string Block::byteString(unsigned char c)
+std::string Block::byteString(unsigned char c)
 {
-	string tmp("0x");
+	std::string tmp("0x");
 	tmp += byteStringPure(c);
 	return tmp;
 }
 
-string Block::getVarString()
+std::string Block::getVarString()
 {
-	string s;
+	std::string s;
 
 	for (int i = 0; i < _length; i++)
 	{
@@ -242,9 +242,9 @@ string Block::getVarString()
 	return s;
 }
 
-string Block::getPatternString()
+std::string Block::getPatternString()
 {
-	string s;
+	std::string s;
 
 	for (int i = 0; i < _length;)
 	{

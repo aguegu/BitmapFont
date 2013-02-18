@@ -3,8 +3,6 @@
 #include <stdio.h>
 #include "block.h"
 
-using namespace std;
-
 int main(int argc, char* argv[])
 {
 	int row_count; 
@@ -13,8 +11,8 @@ int main(int argc, char* argv[])
 	int byte_in_row = row_count / 8;
 	int length = byte_in_row * row_count;
 
-	ifstream fFont(argv[1], ios::binary);
-	ifstream fChar(argv[2], ios::binary);
+	std::ifstream fFont(argv[1], std::ios::binary);
+	std::ifstream fChar(argv[2], std::ios::binary);
 
 	char *p = new char[2];
 	char *pattern = new char[length];
@@ -34,11 +32,11 @@ int main(int argc, char* argv[])
 
 		Block block(pattern, length, byte_in_row);
 
-		cout << block.getVarString();
-		cout << endl;
-		cout << block.getPatternString();
+		std::cout << block.getVarString();
+		std::cout << std::endl;
+		std::cout << block.getPatternString();
 
-		cout << endl;
+		std::cout << std::endl;
 	}
 
 	fChar.close();
