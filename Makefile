@@ -31,7 +31,7 @@ $(TARGET_SEARCH): $(OBJECTS_SEARCH)
 
 allfonts:$(FONTS)
 
-hf: $(TARGET_HACK) $(TARGET)
+hacksample: $(TARGET_HACK) $(TARGET)
 	mkdir -p font_hack/
 	./$< font/HZK16 font_hack/HZK16_0 0x49 0x01 0x01
 	mkdir -p output/	

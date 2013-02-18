@@ -26,11 +26,11 @@ typedef unsigned char byte;
 void shiftBlock(Block & block, int shift)
 {
 	if (bitRead(shift, 0))
-		block.reverseInRow();
+		block.slipInRow();
 	if (bitRead(shift, 1))	
-		block.reverseInCol();
+		block.slipInCol();
 	if (bitRead(shift, 2))
-		block.reverseInDiag();
+		block.slipInDiag();
 	if (bitRead(shift, 3))
 		block.rotate(Block::R90);
 	if (bitRead(shift, 4))

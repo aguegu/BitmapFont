@@ -22,7 +22,7 @@ void Block::reverseArrayInBit(byte *destination, byte *source, int length)
 		destination[i] = reverseByte(source[length - 1 - i]);
 }
 
-void Block::reverseInRow()
+void Block::slipInRow()
 {
 	byte * cache = new byte[_byte_in_row];
 	byte * p = _p;
@@ -34,7 +34,7 @@ void Block::reverseInRow()
 	delete[] cache;
 }
 
-void Block::reverseInCol()
+void Block::slipInCol()
 {
 	byte * cache = new byte[_byte_in_row];
 	byte * p = _p;
@@ -51,7 +51,7 @@ void Block::reverseInCol()
 	delete[] cache;
 }
 
-void Block::reverseInDiag()
+void Block::slipInDiag()
 {
 	byte * cache = new byte[_length];
 	memset(cache, 0x00, _length);
@@ -175,16 +175,16 @@ void Block::rotate(Rotation r)
 	switch (r)
 	{
 	case R90:
-		this->reverseInDiag();
-		this->reverseInCol();
+		this->slipInDiag();
+		this->slipInCol();
 		break;
 	case R180:
-		this->reverseInCol();
-		this->reverseInRow();
+		this->slipInCol();
+		this->slipInRow();
 		break;
 	case R270:
-		this->reverseInDiag();
-		this->reverseInRow();
+		this->slipInDiag();
+		this->slipInRow();
 		break;
 	default:
 		break;

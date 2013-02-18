@@ -38,13 +38,16 @@ public:
 	Block(char *p, int length, int byte_in_row);
 	virtual ~Block();
 
-	void reverseInRow();
-	void reverseInCol();
-	void reverseInDiag();
+	void slipInRow();
+	void slipInCol();
+	void slipInDiag();
 
 	enum Direction
 	{
-		BIT_IN_COL_NEGA, BIT_IN_COL_POSI, BIT_IN_ROW_NEGA, BIT_IN_ROW_POSI,
+		BIT_IN_COL_NEGA, 
+		BIT_IN_COL_POSI, 
+		BIT_IN_ROW_NEGA, 
+		BIT_IN_ROW_POSI,
 	};
 
 	enum Rotation
