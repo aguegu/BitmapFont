@@ -107,5 +107,5 @@ HZK48: BYTE_IN_ROW = 6
 HZK48: HZK48.txt
 
 %.txt: $(TARGET)
-	./$(TARGET) -f font/$(FONT_NAME) -c $(BYTE_IN_ROW) > output/$@
+	./$(TARGET) -f font/$(FONT_NAME) -c $(BYTE_IN_ROW) -p > output/$@
 

@@ -73,11 +73,12 @@ int main(int argc, char ** argv)
 {
 	int opt;
 	int byte_in_row = 1;
-	int row_count;
+	int row_count = 1;
 	char code_sys[4] = "\0";
 	char *file_font = NULL;
-	
-	while ((opt = getopt(argc, argv, ":f:c:")) != -1) {
+	bool show_pattern = false;
+
+	while ((opt = getopt(argc, argv, ":f:c:p")) != -1) {
 		switch (opt) {
 			case 'f':
 				sscanf(optarg, "%*[^/]/%3s%d", code_sys, &row_count);
@@ -88,7 +89,11 @@ int main(int argc, char ** argv)
 				break;
 			case '?':
 				fprintf(stderr, "unknown option: %c\n", optopt);
-				exit(1);
+				exit(EXIT_FAILURE);
+				break;
+			case 'p':
+				show_pattern = true;
+			default:
 				break;
 		}
 	}
@@ -97,7 +102,6 @@ int main(int argc, char ** argv)
 	bool is_dword = strcmp(code_sys, "ASC");
 
 	std::ifstream fin(file_font, std::ios::binary);
-
 	std::cout << std::hex;
 
 	char *p = new char[length];
@@ -111,13 +115,15 @@ int main(int argc, char ** argv)
 		Block block(p, length, byte_in_row);
 
 		std::cout << block.getVarString() << std::endl;
-		std::cout << block.getPatternString() << std::endl;
+
+		if (show_pattern)
+			std::cout << block.getPatternString() << std::endl;
 
 		std::cout.flush();
 	}
 
 	fin.close();
-	
+
 	delete[] p;
 
 	exit(EXIT_SUCCESS);
