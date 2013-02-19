@@ -22,7 +22,7 @@
 #include <sstream>
 #include "block.h"
 
-void printFont(Block & block, int var_in_row, bool slip_horizontal, bool slip_vertical, bool slip_inbyte, bool show_pattern);
+void printFont(Block & block, int var_in_row, bool show_pattern, byte transform);
 
 int convertCode(const char * tocode, const char * fromcode, char *inbuff, size_t inlen, char *outbuff, size_t outlen)
 {
@@ -73,9 +73,10 @@ int main(int argc, char ** argv)
 	char *file_font = NULL;
 	bool show_pattern = false;
 	int var_in_row = 8;
-	bool slip_horizontal = false, slip_vertical = false, slip_inbyte = false;
 
-	while ((opt = getopt(argc, argv, ":f:c:n:pbhv")) != -1) {
+	byte transform = 0x00;
+
+	while ((opt = getopt(argc, argv, ":f:c:n:phvbr:s")) != -1) {
 		switch (opt) {
 			case 'f':
 				sscanf(optarg, "%*[^/]/%3s%d", code_sys, &row_count);
@@ -92,14 +93,23 @@ int main(int argc, char ** argv)
 				var_in_row = atoi(optarg);
 				if (var_in_row == 0) var_in_row = 8;
 				break;
-			case 'b':
-				slip_inbyte = true;
-				break;
 			case 'h':
-				slip_horizontal = true;
+				bitSet(transform, 0);
 				break;
 			case 'v':
-				slip_vertical = true;
+				bitSet(transform, 1);
+				break;
+			case 's':
+				bitSet(transform, 2);
+				break;
+			case 'b':
+				bitSet(transform, 3);
+				break;
+			case 'r':
+				transform |= (byte)(atoi(optarg) % 4) << 4;
+				break;
+			case 'd':
+				bitSet(transform, 6);
 				break;
 			case ':':
 				std::cerr << "option needs a value." << std::endl;
@@ -131,7 +141,7 @@ int main(int argc, char ** argv)
 	if (str.empty()) {
 		while (fin.read(p, length)) {
 			std::cout << getHeader(fin.tellg(), length, is_dword) << std::endl;
-			printFont(block, var_in_row, slip_horizontal, slip_vertical, slip_inbyte, show_pattern);
+			printFont(block, var_in_row, show_pattern, transform);
 		} 
 	} else {
 		char *source = new char [str.length() + 1];
@@ -142,18 +152,18 @@ int main(int argc, char ** argv)
 
 		unsigned int i = 0;
 		while (i < strlen(dest)) {
-			unsigned char c = dest[i];
+			byte c = dest[i];
 
 			if (c < 0x7f && !is_dword) {
 				fin.seekg(length * dest[i]);
 				fin.read(p, length); 
 				std::cout << getHeader(fin.tellg(), length, is_dword) << std::endl;
-				printFont(block, var_in_row, slip_horizontal, slip_vertical, slip_inbyte, show_pattern);
+				printFont(block, var_in_row, show_pattern, transform);
 			} else if (c >= 0xa1 && is_dword ) {
-				fin.seekg(((c - 0xa1) * 94 + (unsigned char)dest[i+1] - 0xa1) * length);	
+				fin.seekg(((c - 0xa1) * 94 + (byte)dest[i+1] - 0xa1) * length);	
 				fin.read(p, length); 
 				std::cout << getHeader(fin.tellg(), length, is_dword) << std::endl;
-				printFont(block, var_in_row, slip_horizontal, slip_vertical, slip_inbyte, show_pattern);
+				printFont(block, var_in_row, show_pattern, transform);
 				i++;
 			} else {
 				std::cerr << "// No pattern for " << (char)dest[i] << std::endl;
@@ -165,17 +175,31 @@ int main(int argc, char ** argv)
 	}
 
 	fin.close();
-
 	delete[] p;
-
 	exit(EXIT_SUCCESS);
 }
 
-void printFont(Block & block, int var_in_row, bool slip_horizontal, bool slip_vertical, bool slip_inbyte, bool show_pattern)
+void printFont(Block & block, int var_in_row, bool show_pattern, byte transform)
 {
-	if (slip_horizontal) block.slipInRow();
-	if (slip_vertical) block.slipInCol();
-	if (slip_inbyte) block.slipInByte();
+	switch ((transform & 0x30) >> 4) {
+		case 3:
+			block.rotate(Block::R270);
+			break;
+		case 2:
+			block.rotate(Block::R180);
+			break;
+		case 1:
+			block.rotate(Block::R90);
+			break;
+		case 0: 
+		default:
+			break;
+	}
+
+	if (bitRead(transform, 0)) block.slipInRow();
+	if (bitRead(transform, 1)) block.slipInCol();
+	if (bitRead(transform, 2)) block.slipInByte();
+	if (bitRead(transform, 3)) block.opposite();
 
 	std::cout << block.getVarString(var_in_row) << std::endl;
 
