@@ -21,16 +21,14 @@
 #include <unistd.h>
 #include "block.h"
 
-int convertCode(char *inbuf, unsigned long inlen, char *outbuf,
+int convertCode(char *inbuff, unsigned long inlen, char *outbuff,
 		unsigned long outlen)
 {
-	char **pin = &inbuf;
-	char **pout = &outbuf;
 	iconv_t cd = iconv_open("UTF-8", "GB2312");
 
-	memset(outbuf, 0, outlen);
+	memset(outbuff, 0, outlen);
 
-	if (cd == 0 || iconv(cd, pin, &inlen, pout, &outlen) == (size_t) (-1))
+	if (cd == 0 || iconv(cd, &inbuff, &inlen, &outbuff, &outlen) == (size_t) (-1))
 		return -1;
 
 	iconv_close(cd);
@@ -39,10 +37,8 @@ int convertCode(char *inbuf, unsigned long inlen, char *outbuf,
 
 void printHeader(long pos, int length, bool is_dword)
 {
-	char s_in[8] =
-	{ 0 };
-	char s_out[8] =
-	{ 0 };
+	char s_in[2] = { 0 };
+	char s_out[3] = { 0 };
 
 	long index = pos / length - 1;
 	std::cout << "// 0x" << pos - length;
@@ -52,7 +48,7 @@ void printHeader(long pos, int length, bool is_dword)
 	{
 		s_in[0] = 0xA1 + (index / 94);
 		s_in[1] = 0xA1 + (index % 94);
-		convertCode(s_in, 8, s_out, 8);
+		convertCode(s_in, sizeof(s_in), s_out, sizeof(s_out));
 		std::cout << "(GB2312)" << Block::byteString(s_in[0]);
 		std::cout << Block::byteStringPure(s_in[1]) << ", ";
 		std::cout << "(UTF-8)" << Block::byteString(s_out[0]) << Block::byteStringPure(s_out[1])
@@ -61,7 +57,7 @@ void printHeader(long pos, int length, bool is_dword)
 	else
 	{
 		s_in[0] = index;
-		convertCode(s_in, 8, s_out, 8);
+		convertCode(s_in, sizeof(s_in), s_out, sizeof(s_out));
 		std::cout << "(GB2312)" << Block::byteString(s_in[0]) << ", ";
 		std::cout << "(UTF-8)" << Block::byteString(s_in[0]) << ", ";
 	}
