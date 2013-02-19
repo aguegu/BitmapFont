@@ -125,8 +125,6 @@ int main(int argc, char ** argv)
 		optind++;
 	}
 
-	std::cerr << str.length() << std::endl;
-
 	int length = byte_in_row * row_count;
 	bool is_dword = strcmp(code_sys, "ASC");
 
@@ -140,21 +138,26 @@ int main(int argc, char ** argv)
 					slip_horizontal, slip_vertical, slip_inbyte, show_pattern);
 		} 
 	} else {
-		char *source = new char [str.length()+1];
+		char *source = new char [str.length() + 1];
 		std::strcpy(source, str.c_str());
 		char *dest = new char[str.length() + 1];
 
 		convertCode("GB2312", "utf-8", source, sizeof(source), dest, sizeof(dest));
 
 		unsigned int i = 0;
-		while (i<strlen(dest)) {
-			fprintf(stderr, "%s, ", Block::byteStringPure(dest[i]).c_str());
+		while (i < strlen(dest)) {
 
-			if (dest[i] < 0x7f && !is_dword) {
+			if ((unsigned char)dest[i] < 0x7f && !is_dword) {
 				fin.seekg(length * dest[i]);
 				fin.read(p, length); 
 				printFont(p, fin.tellg(), length, is_dword, byte_in_row, var_in_row, 
 					slip_horizontal, slip_vertical, slip_inbyte, show_pattern);
+			} else if ((unsigned char)dest[i] >= 0xa1 && is_dword ) {
+				fin.seekg((((unsigned char)dest[i] - 0xa1) * 94 + (unsigned char)dest[i+1] - 0xa1) * length);	
+				fin.read(p, length); 
+				printFont(p, fin.tellg(), length, is_dword, byte_in_row, var_in_row, 
+					slip_horizontal, slip_vertical, slip_inbyte, show_pattern);
+				i++;
 			} else {
 				fprintf(stderr, "// No pattern for %c \n", dest[i]);
 			}
