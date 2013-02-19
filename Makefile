@@ -35,7 +35,6 @@ all: $(TARGET_HACK) $(TARGET)
 clean:
 	rm -rfv $(OBJECTS) $(TARGET)
 	rm -rfv $(OBJECTS_HACK) $(TARGET_HACK)	
-	rm -rfv $(OBJECTS_SEARCH) $(TARGET_SEARCH)
 	rm -rfv output/
 	rm -rfv font_hack/
 	

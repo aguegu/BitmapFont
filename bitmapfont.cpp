@@ -40,31 +40,27 @@ int convertCode(const char * tocode, const char * fromcode, char *inbuff, size_t
 
 std::string getHeader(long pos, int length, bool is_dword)
 {
-	char s_in[2] = { 0 };
-	char s_out[4] = { 0 };
-
-	long index = pos / length - 1;
 	std::ostringstream s;
 	s << std::hex;
 	s << "// 0x" << pos - length;
+
+	long index = pos / length - 1;
 	s << ", 0x" << index << ", ";
 
 	if (is_dword) {
+		char s_in[2], s_out[4];
 		s_in[0] = 0xA1 + (index / 94);
 		s_in[1] = 0xA1 + (index % 94);
+		
 		convertCode("utf-8", "GB2312", s_in, sizeof(s_in), s_out, sizeof(s_out));
-		s << "(GB2312)" << Block::byteString(s_in[0]);
-		s << Block::byteStringPure(s_in[1]) << ", ";
+		s << "(GB2312)" << Block::byteString(s_in[0]) << Block::byteStringPure(s_in[1]) << ", ";
 		s << "(UTF-8)" << Block::byteString(s_out[0]) << Block::byteStringPure(s_out[1])
 			<< Block::byteStringPure(s_out[2]) << ", ";
+		s << "\" " << s_out << " \"";
 	} else 	{
-		s_in[0] = index;
-		convertCode("utf-8", "GB2312", s_in, sizeof(s_in), s_out, sizeof(s_out));
-		s << "(GB2312)" << Block::byteString(s_in[0]) << ", ";
-		s << "(UTF-8)" << Block::byteString(s_in[0]) << ", ";
+		s << "(UTF-8)" << Block::byteString(index) << ", ";
+		s << "\" " << (char)index << " \"";
 	}
-
-	s << "\" " << s_out << " \"";
 
 	return (s.str());
 }
@@ -147,13 +143,15 @@ int main(int argc, char ** argv)
 		unsigned int i = 0;
 		while (i < strlen(dest)) {
 
-			if ((unsigned char)dest[i] < 0x7f && !is_dword) {
+			unsigned char c = (unsigned char) dest[i];
+
+			if (c < 0x7f && !is_dword) {
 				fin.seekg(length * dest[i]);
 				fin.read(p, length); 
 				printFont(p, fin.tellg(), length, is_dword, byte_in_row, var_in_row, 
 					slip_horizontal, slip_vertical, slip_inbyte, show_pattern);
-			} else if ((unsigned char)dest[i] >= 0xa1 && is_dword ) {
-				fin.seekg((((unsigned char)dest[i] - 0xa1) * 94 + (unsigned char)dest[i+1] - 0xa1) * length);	
+			} else if (c >= 0xa1 && is_dword ) {
+				fin.seekg(((c - 0xa1) * 94 + (unsigned char)dest[i+1] - 0xa1) * length);	
 				fin.read(p, length); 
 				printFont(p, fin.tellg(), length, is_dword, byte_in_row, var_in_row, 
 					slip_horizontal, slip_vertical, slip_inbyte, show_pattern);
