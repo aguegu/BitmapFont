@@ -15,28 +15,13 @@ $(TARGET): $(OBJECTS)
 %.o: %.cpp
 	$(CC) $(CFLAGS) $< -o $@
 
-SOURCES_HACK = hackfont.cpp block.cpp
-OBJECTS_HACK = $(SOURCES_HACK:.cpp=.o)
-TARGET_HACK = hackfont
-
-$(TARGET_HACK): $(OBJECTS_HACK)
-	$(CC) $(OBJECTS_HACK) -o $@
-
 allfonts:$(FONTS)
 
-hacksample: $(TARGET_HACK) $(TARGET)
-	mkdir -p font_hack/
-	./$< font/HZK16 font_hack/HZK16_0 0x49 0x01 0x01
-	mkdir -p output/	
-	./bitmapfont font_hack/HZK16_0 2 > output/HZK16_0.txt
-
-all: $(TARGET_HACK) $(TARGET) 
+all: $(TARGET) 
 
 clean:
 	rm -rfv $(OBJECTS) $(TARGET)
-	rm -rfv $(OBJECTS_HACK) $(TARGET_HACK)	
 	rm -rfv output/
-	rm -rfv font_hack/
 	
 ASC12: FONT_NAME = ASC12
 ASC12: BYTE_IN_ROW = 1

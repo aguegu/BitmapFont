@@ -37,6 +37,8 @@ public:
 	Block(char *p, int length, int byte_in_row);
 	virtual ~Block();
 
+	bool isSquare();
+
 	void slipInRow();
 	void slipInCol();
 	void slipInDiag();
@@ -82,7 +84,6 @@ private:
 	void moveBitInRowPosi(bool recycle);
 
 	void (Block::*_move)(bool);
-
 };
 
 #endif

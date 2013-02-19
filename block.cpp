@@ -10,6 +10,11 @@ Block::~Block()
 {
 }
 
+bool Block::isSquare()
+{
+	return (_byte_in_row * 8 == _row_count);
+}
+
 byte Block::slipByte(byte c)
 {
 	return (*(REVERSE + (c & (byte) 0x0f)) << 4)
@@ -172,6 +177,8 @@ void Block::move(bool recycle)
 
 void Block::rotate(Rotation r)
 {
+	if (!isSquare()) return;
+	
 	switch (r)
 	{
 	case R90:

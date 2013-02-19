@@ -22,7 +22,7 @@
 #include <sstream>
 #include "block.h"
 
-void printFont(Block & block, int var_in_row, bool show_pattern, byte transform);
+void printFont(Block & block, int var_in_row, bool show_pattern, byte transform, byte direction, int step);
 
 int convertCode(const char * tocode, const char * fromcode, char *inbuff, size_t inlen, char *outbuff, size_t outlen)
 {
@@ -75,8 +75,10 @@ int main(int argc, char ** argv)
 	int var_in_row = 8;
 
 	byte transform = 0x00;
+	byte move_direction = 0x00;
+	int move_step = 0x00;
 
-	while ((opt = getopt(argc, argv, ":f:c:n:phvbr:s")) != -1) {
+	while ((opt = getopt(argc, argv, ":f:c:n:phvbdr:t:m:s")) != -1) {
 		switch (opt) {
 			case 'f':
 				sscanf(optarg, "%*[^/]/%3s%d", code_sys, &row_count);
@@ -111,6 +113,12 @@ int main(int argc, char ** argv)
 			case 'd':
 				bitSet(transform, 6);
 				break;
+			case 'm':
+				move_direction = atoi(optarg);
+				break;
+			case 't':
+				move_step = atoi(optarg);
+				break;
 			case ':':
 				std::cerr << "option needs a value." << std::endl;
 				exit(EXIT_FAILURE);
@@ -141,7 +149,7 @@ int main(int argc, char ** argv)
 	if (str.empty()) {
 		while (fin.read(p, length)) {
 			std::cout << getHeader(fin.tellg(), length, is_dword) << std::endl;
-			printFont(block, var_in_row, show_pattern, transform);
+			printFont(block, var_in_row, show_pattern, transform, move_direction, move_step);
 		} 
 	} else {
 		char *source = new char [str.length() + 1];
@@ -158,12 +166,12 @@ int main(int argc, char ** argv)
 				fin.seekg(length * dest[i]);
 				fin.read(p, length); 
 				std::cout << getHeader(fin.tellg(), length, is_dword) << std::endl;
-				printFont(block, var_in_row, show_pattern, transform);
+				printFont(block, var_in_row, show_pattern, transform, move_direction, move_step);
 			} else if (c >= 0xa1 && is_dword ) {
 				fin.seekg(((c - 0xa1) * 94 + (byte)dest[i+1] - 0xa1) * length);	
 				fin.read(p, length); 
 				std::cout << getHeader(fin.tellg(), length, is_dword) << std::endl;
-				printFont(block, var_in_row, show_pattern, transform);
+				printFont(block, var_in_row, show_pattern, transform, move_direction, move_step);
 				i++;
 			} else {
 				std::cerr << "// No pattern for " << (char)dest[i] << std::endl;
@@ -179,7 +187,34 @@ int main(int argc, char ** argv)
 	exit(EXIT_SUCCESS);
 }
 
-void printFont(Block & block, int var_in_row, bool show_pattern, byte transform)
+void moveBlock(Block & block, int direction, int step)
+{
+	switch (direction & 0x0f)
+	{
+		case 0x01:
+			block.setMoveDirection(Block::BIT_IN_COL_POSI);
+			break;
+		case 0x02:
+			block.setMoveDirection(Block::BIT_IN_COL_NEGA);
+			break;
+		case 0x04:
+			block.setMoveDirection(Block::BIT_IN_ROW_POSI);
+			break;
+		case 0x08:
+			block.setMoveDirection(Block::BIT_IN_ROW_NEGA);
+			break;
+		default:
+			step = 0;
+			break;
+	}
+
+	while (step--)
+	{
+		block.move(direction & 0x10);
+	}
+}
+
+void printFont(Block & block, int var_in_row, bool show_pattern, byte transform, byte direction, int step)
 {
 	switch ((transform & 0x30) >> 4) {
 		case 3:
@@ -196,6 +231,8 @@ void printFont(Block & block, int var_in_row, bool show_pattern, byte transform)
 			break;
 	}
 
+	moveBlock(block, direction, step);
+
 	if (bitRead(transform, 0)) block.slipInRow();
 	if (bitRead(transform, 1)) block.slipInCol();
 	if (bitRead(transform, 2)) block.slipInByte();
@@ -206,3 +243,5 @@ void printFont(Block & block, int var_in_row, bool show_pattern, byte transform)
 	if (show_pattern)
 		std::cout << block.getPatternString() << std::endl;
 }
+
+
