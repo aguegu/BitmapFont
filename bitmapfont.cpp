@@ -19,6 +19,7 @@
 #include <cstdlib>
 #include <cstring>
 #include <unistd.h>
+#include <sstream>
 #include "block.h"
 
 int convertCode(char *inbuff, unsigned long inlen, char *outbuff,
@@ -35,34 +36,38 @@ int convertCode(char *inbuff, unsigned long inlen, char *outbuff,
 	return 0;
 }
 
-void printHeader(long pos, int length, bool is_dword)
+std::string getHeader(long pos, int length, bool is_dword)
 {
 	char s_in[2] = { 0 };
-	char s_out[3] = { 0 };
+	char s_out[4] = { 0 };
 
 	long index = pos / length - 1;
-	std::cout << "// 0x" << pos - length;
-	std::cout << ", 0x" << index << ", ";
+	std::ostringstream s;
+	s << std::hex;
+	s << "// 0x" << pos - length;
+	s << ", 0x" << index << ", ";
 
 	if (is_dword)
 	{
 		s_in[0] = 0xA1 + (index / 94);
 		s_in[1] = 0xA1 + (index % 94);
 		convertCode(s_in, sizeof(s_in), s_out, sizeof(s_out));
-		std::cout << "(GB2312)" << Block::byteString(s_in[0]);
-		std::cout << Block::byteStringPure(s_in[1]) << ", ";
-		std::cout << "(UTF-8)" << Block::byteString(s_out[0]) << Block::byteStringPure(s_out[1])
+		s << "(GB2312)" << Block::byteString(s_in[0]);
+		s << Block::byteStringPure(s_in[1]) << ", ";
+		s << "(UTF-8)" << Block::byteString(s_out[0]) << Block::byteStringPure(s_out[1])
 			<< Block::byteStringPure(s_out[2]) << ", ";
 	}
 	else
 	{
 		s_in[0] = index;
 		convertCode(s_in, sizeof(s_in), s_out, sizeof(s_out));
-		std::cout << "(GB2312)" << Block::byteString(s_in[0]) << ", ";
-		std::cout << "(UTF-8)" << Block::byteString(s_in[0]) << ", ";
+		s << "(GB2312)" << Block::byteString(s_in[0]) << ", ";
+		s << "(UTF-8)" << Block::byteString(s_in[0]) << ", ";
 	}
 
-	std::cout << "\" " << s_out << " \"";
+	s << "\" " << s_out << " \"";
+
+	return (s.str());
 }
 
 int main(int argc, char ** argv)
@@ -98,15 +103,13 @@ int main(int argc, char ** argv)
 	bool is_dword = strcmp(code_sys, "ASC");
 
 	std::ifstream fin(file_font, std::ios::binary);
-	std::cout << std::hex;
 
 	char *p = new char[length];
 	while (fin.read(p, length))
 	{
 		long pos = fin.tellg();
 
-		printHeader(pos, length, is_dword);
-		std::cout << std::endl;
+		std::cout << getHeader(pos, length, is_dword) << std::endl;
 
 		Block block(p, length, byte_in_row);
 
