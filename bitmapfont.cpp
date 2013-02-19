@@ -22,8 +22,7 @@
 #include <sstream>
 #include "block.h"
 
-int convertCode(char *inbuff, unsigned long inlen, char *outbuff,
-		unsigned long outlen)
+int convertCode(char *inbuff, size_t inlen, char *outbuff, size_t outlen)
 {
 	iconv_t cd = iconv_open("UTF-8", "GB2312");
 
@@ -88,12 +87,14 @@ int main(int argc, char ** argv)
 				break;
 			case 'c':
 				byte_in_row = atoi(optarg);
+				if (byte_in_row == 0) byte_in_row = 1;
 				break;
 			case 'p':
 				show_pattern = true;
 				break;
 			case 'n':
 				var_in_row = atoi(optarg);
+				if (var_in_row == 0) var_in_row = 8;
 				break;
 			case '?':
 				fprintf(stderr, "unknown option: %c\n", optopt);

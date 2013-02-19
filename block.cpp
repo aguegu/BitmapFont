@@ -10,7 +10,7 @@ Block::~Block()
 {
 }
 
-byte Block::reverseByte(byte c)
+byte Block::slipByte(byte c)
 {
 	return (*(REVERSE + (c & (byte) 0x0f)) << 4)
 			^ (*(REVERSE + (c >> 4)) & (byte) 0x0f);
@@ -19,7 +19,7 @@ byte Block::reverseByte(byte c)
 void Block::reverseArrayInBit(byte *destination, byte *source, int length)
 {
 	for (int i = 0; i < length; i++)
-		destination[i] = reverseByte(source[length - 1 - i]);
+		destination[i] = slipByte(source[length - 1 - i]);
 }
 
 void Block::slipInRow()
@@ -208,7 +208,7 @@ void Block::reverse()
 	int i = _length;
 	while (i--)
 	{
-		*p = reverseByte(*p);
+		*p = slipByte(*p);
 		p++;
 	}
 }

@@ -60,7 +60,7 @@ public:
 	void opposite();
 	void reverse();
 
-	static byte reverseByte(byte c);
+	static byte slipByte(byte c);
 	static std::string byteStringPure(unsigned char c);
 	static std::string byteString(unsigned char c);
 
