@@ -22,8 +22,7 @@
 #include <sstream>
 #include "block.h"
 
-void printFont(char *p, long pos, int length, bool is_dword, int byte_in_row, int val_in_row, 
-		bool slip_horizontal, bool slip_vertical, bool slip_inbyte, bool show_pattern);
+void printFont(Block & block, int var_in_row, bool slip_horizontal, bool slip_vertical, bool slip_inbyte, bool show_pattern);
 
 int convertCode(const char * tocode, const char * fromcode, char *inbuff, size_t inlen, char *outbuff, size_t outlen)
 {
@@ -103,11 +102,11 @@ int main(int argc, char ** argv)
 				slip_vertical = true;
 				break;
 			case ':':
-				fprintf(stderr, "option needs a value.\n");
+				std::cerr << "option needs a value." << std::endl;
 				exit(EXIT_FAILURE);
 				break;
 			case '?':
-				fprintf(stderr, "unknown option: %c\n", optopt);
+				std::cerr << "unknown option: " << (char)optopt << std::endl;
 				exit(EXIT_FAILURE);
 				break;
 			default:
@@ -127,42 +126,41 @@ int main(int argc, char ** argv)
 	std::ifstream fin(file_font, std::ios::binary);
 
 	char *p = new char[length];
+	Block block(p, length, byte_in_row);
 
 	if (str.empty()) {
 		while (fin.read(p, length)) {
-			printFont(p, fin.tellg(), length, is_dword, byte_in_row, var_in_row, 
-					slip_horizontal, slip_vertical, slip_inbyte, show_pattern);
+			std::cout << getHeader(fin.tellg(), length, is_dword) << std::endl;
+			printFont(block, var_in_row, slip_horizontal, slip_vertical, slip_inbyte, show_pattern);
 		} 
 	} else {
 		char *source = new char [str.length() + 1];
 		std::strcpy(source, str.c_str());
 		char *dest = new char[str.length() + 1];
-
 		convertCode("GB2312", "utf-8", source, sizeof(source), dest, sizeof(dest));
+		delete[] source;	
 
 		unsigned int i = 0;
 		while (i < strlen(dest)) {
-
-			unsigned char c = (unsigned char) dest[i];
+			unsigned char c = dest[i];
 
 			if (c < 0x7f && !is_dword) {
 				fin.seekg(length * dest[i]);
 				fin.read(p, length); 
-				printFont(p, fin.tellg(), length, is_dword, byte_in_row, var_in_row, 
-					slip_horizontal, slip_vertical, slip_inbyte, show_pattern);
+				std::cout << getHeader(fin.tellg(), length, is_dword) << std::endl;
+				printFont(block, var_in_row, slip_horizontal, slip_vertical, slip_inbyte, show_pattern);
 			} else if (c >= 0xa1 && is_dword ) {
 				fin.seekg(((c - 0xa1) * 94 + (unsigned char)dest[i+1] - 0xa1) * length);	
 				fin.read(p, length); 
-				printFont(p, fin.tellg(), length, is_dword, byte_in_row, var_in_row, 
-					slip_horizontal, slip_vertical, slip_inbyte, show_pattern);
+				std::cout << getHeader(fin.tellg(), length, is_dword) << std::endl;
+				printFont(block, var_in_row, slip_horizontal, slip_vertical, slip_inbyte, show_pattern);
 				i++;
 			} else {
-				fprintf(stderr, "// No pattern for %c \n", dest[i]);
+				std::cerr << "// No pattern for " << (char)dest[i] << std::endl;
 			}
 			i++;
 		}
 
-		delete[] source;	
 		delete[] dest;
 	}
 
@@ -173,13 +171,8 @@ int main(int argc, char ** argv)
 	exit(EXIT_SUCCESS);
 }
 
-void printFont(char *p, long pos, int length, bool is_dword, int byte_in_row, int var_in_row, 
-		bool slip_horizontal, bool slip_vertical, bool slip_inbyte, bool show_pattern)
+void printFont(Block & block, int var_in_row, bool slip_horizontal, bool slip_vertical, bool slip_inbyte, bool show_pattern)
 {
-	std::cout << getHeader(pos, length, is_dword) << std::endl;
-
-	Block block(p, length, byte_in_row);
-
 	if (slip_horizontal) block.slipInRow();
 	if (slip_vertical) block.slipInCol();
 	if (slip_inbyte) block.slipInByte();
