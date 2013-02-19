@@ -228,14 +228,14 @@ std::string Block::byteString(unsigned char c)
 	return tmp;
 }
 
-std::string Block::getVarString()
+std::string Block::getVarString(int var_per_row)
 {
 	std::string s;
 
-	for (int i = 0; i < _length; i++)
+	for (int i = 0; i < _length; )
 	{
 		s += byteString(_p[i]) + ", ";
-		if (i % 8 == 7)
+		if ((++i) % var_per_row == 0)
 			s += "\n";
 	}
 

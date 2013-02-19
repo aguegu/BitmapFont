@@ -78,8 +78,9 @@ int main(int argc, char ** argv)
 	char code_sys[4] = "\0";
 	char *file_font = NULL;
 	bool show_pattern = false;
+	int var_in_row = 8;
 
-	while ((opt = getopt(argc, argv, ":f:c:p")) != -1) {
+	while ((opt = getopt(argc, argv, ":f:c:n:p")) != -1) {
 		switch (opt) {
 			case 'f':
 				sscanf(optarg, "%*[^/]/%3s%d", code_sys, &row_count);
@@ -88,12 +89,16 @@ int main(int argc, char ** argv)
 			case 'c':
 				byte_in_row = atoi(optarg);
 				break;
+			case 'p':
+				show_pattern = true;
+				break;
+			case 'n':
+				var_in_row = atoi(optarg);
+				break;
 			case '?':
 				fprintf(stderr, "unknown option: %c\n", optopt);
 				exit(EXIT_FAILURE);
 				break;
-			case 'p':
-				show_pattern = true;
 			default:
 				break;
 		}
@@ -113,7 +118,7 @@ int main(int argc, char ** argv)
 
 		Block block(p, length, byte_in_row);
 
-		std::cout << block.getVarString() << std::endl;
+		std::cout << block.getVarString(var_in_row) << std::endl;
 
 		if (show_pattern)
 			std::cout << block.getPatternString() << std::endl;

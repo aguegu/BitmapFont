@@ -64,7 +64,7 @@ public:
 	static std::string byteStringPure(unsigned char c);
 	static std::string byteString(unsigned char c);
 
-	std::string getVarString();
+	std::string getVarString(int var_per_row = 8);
 	std::string getPatternString();
 
 private:

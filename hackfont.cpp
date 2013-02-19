@@ -69,7 +69,7 @@ void moveBlock(Block & block, int direction, int step)
 	}
 }
 
-int main(int argc, char* argv[])
+int main(int argc, char** argv)
 {
 	int row_count;
 	sscanf(argv[1], "%*[^/]/%*3s%d", &row_count);
