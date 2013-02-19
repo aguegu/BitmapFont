@@ -22,13 +22,6 @@ TARGET_HACK = hackfont
 $(TARGET_HACK): $(OBJECTS_HACK)
 	$(CC) $(OBJECTS_HACK) -o $@
 
-SOURCES_SEARCH = searchfont.cpp block.cpp
-OBJECTS_SEARCH = $(SOURCES_SEARCH:.cpp=.o)
-TARGET_SEARCH = searchfont
-
-$(TARGET_SEARCH): $(OBJECTS_SEARCH)
-	$(CC) $(OBJECTS_SEARCH) -o $@
-
 allfonts:$(FONTS)
 
 hacksample: $(TARGET_HACK) $(TARGET)
@@ -37,7 +30,7 @@ hacksample: $(TARGET_HACK) $(TARGET)
 	mkdir -p output/	
 	./bitmapfont font_hack/HZK16_0 2 > output/HZK16_0.txt
 
-all: $(TARGET_HACK) $(TARGET) $(TARGET_SEARCH)
+all: $(TARGET_HACK) $(TARGET) 
 
 clean:
 	rm -rfv $(OBJECTS) $(TARGET)
