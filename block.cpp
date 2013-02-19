@@ -202,7 +202,7 @@ void Block::opposite()
 	}
 }
 
-void Block::reverse()
+void Block::slipInByte()
 {
 	byte *p = _p;
 	int i = _length;

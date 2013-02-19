@@ -39,7 +39,7 @@ void shiftBlock(Block & block, int shift)
 	if (bitRead(shift, 6))
 		block.opposite();
 	if (bitRead(shift, 7))
-		block.reverse();
+		block.slipInByte();
 }
 
 void moveBlock(Block & block, int direction, int step)

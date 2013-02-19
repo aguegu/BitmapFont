@@ -40,6 +40,7 @@ public:
 	void slipInRow();
 	void slipInCol();
 	void slipInDiag();
+	void slipInByte();
 
 	enum Direction
 	{
@@ -58,7 +59,6 @@ public:
 	void setMoveDirection(Direction d);
 	void rotate(Rotation r);
 	void opposite();
-	void reverse();
 
 	static byte slipByte(byte c);
 	static std::string byteStringPure(unsigned char c);

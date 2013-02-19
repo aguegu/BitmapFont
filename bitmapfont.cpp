@@ -22,9 +22,12 @@
 #include <sstream>
 #include "block.h"
 
-int convertCode(char *inbuff, size_t inlen, char *outbuff, size_t outlen)
+void printFont(char *p, long pos, int length, bool is_dword, int byte_in_row, int val_in_row, 
+		bool slip_horizontal, bool slip_vertical, bool slip_inbyte, bool show_pattern);
+
+int convertCode(const char * tocode, const char * fromcode, char *inbuff, size_t inlen, char *outbuff, size_t outlen)
 {
-	iconv_t cd = iconv_open("UTF-8", "GB2312");
+	iconv_t cd = iconv_open(tocode, fromcode);
 
 	memset(outbuff, 0, outlen);
 
@@ -46,20 +49,17 @@ std::string getHeader(long pos, int length, bool is_dword)
 	s << "// 0x" << pos - length;
 	s << ", 0x" << index << ", ";
 
-	if (is_dword)
-	{
+	if (is_dword) {
 		s_in[0] = 0xA1 + (index / 94);
 		s_in[1] = 0xA1 + (index % 94);
-		convertCode(s_in, sizeof(s_in), s_out, sizeof(s_out));
+		convertCode("utf-8", "GB2312", s_in, sizeof(s_in), s_out, sizeof(s_out));
 		s << "(GB2312)" << Block::byteString(s_in[0]);
 		s << Block::byteStringPure(s_in[1]) << ", ";
 		s << "(UTF-8)" << Block::byteString(s_out[0]) << Block::byteStringPure(s_out[1])
 			<< Block::byteStringPure(s_out[2]) << ", ";
-	}
-	else
-	{
+	} else 	{
 		s_in[0] = index;
-		convertCode(s_in, sizeof(s_in), s_out, sizeof(s_out));
+		convertCode("utf-8", "GB2312", s_in, sizeof(s_in), s_out, sizeof(s_out));
 		s << "(GB2312)" << Block::byteString(s_in[0]) << ", ";
 		s << "(UTF-8)" << Block::byteString(s_in[0]) << ", ";
 	}
@@ -78,8 +78,9 @@ int main(int argc, char ** argv)
 	char *file_font = NULL;
 	bool show_pattern = false;
 	int var_in_row = 8;
+	bool slip_horizontal = false, slip_vertical = false, slip_inbyte = false;
 
-	while ((opt = getopt(argc, argv, ":f:c:n:p")) != -1) {
+	while ((opt = getopt(argc, argv, ":f:c:n:pbhv")) != -1) {
 		switch (opt) {
 			case 'f':
 				sscanf(optarg, "%*[^/]/%3s%d", code_sys, &row_count);
@@ -96,6 +97,19 @@ int main(int argc, char ** argv)
 				var_in_row = atoi(optarg);
 				if (var_in_row == 0) var_in_row = 8;
 				break;
+			case 'b':
+				slip_inbyte = true;
+				break;
+			case 'h':
+				slip_horizontal = true;
+				break;
+			case 'v':
+				slip_vertical = true;
+				break;
+			case ':':
+				fprintf(stderr, "option needs a value.\n");
+				exit(EXIT_FAILURE);
+				break;
 			case '?':
 				fprintf(stderr, "unknown option: %c\n", optopt);
 				exit(EXIT_FAILURE);
@@ -105,26 +119,50 @@ int main(int argc, char ** argv)
 		}
 	}
 
+	std::string str;
+	while (optind < argc) {
+		str.append(argv[optind]);
+		optind++;
+	}
+
+	std::cerr << str.length() << std::endl;
+
 	int length = byte_in_row * row_count;
 	bool is_dword = strcmp(code_sys, "ASC");
 
 	std::ifstream fin(file_font, std::ios::binary);
 
 	char *p = new char[length];
-	while (fin.read(p, length))
-	{
-		long pos = fin.tellg();
 
-		std::cout << getHeader(pos, length, is_dword) << std::endl;
+	if (str.empty()) {
+		while (fin.read(p, length)) {
+			printFont(p, fin.tellg(), length, is_dword, byte_in_row, var_in_row, 
+					slip_horizontal, slip_vertical, slip_inbyte, show_pattern);
+		} 
+	} else {
+		char *source = new char [str.length()+1];
+		std::strcpy(source, str.c_str());
+		char *dest = new char[str.length() + 1];
 
-		Block block(p, length, byte_in_row);
+		convertCode("GB2312", "utf-8", source, sizeof(source), dest, sizeof(dest));
 
-		std::cout << block.getVarString(var_in_row) << std::endl;
+		unsigned int i = 0;
+		while (i<strlen(dest)) {
+			fprintf(stderr, "%s, ", Block::byteStringPure(dest[i]).c_str());
 
-		if (show_pattern)
-			std::cout << block.getPatternString() << std::endl;
+			if (dest[i] < 0x7f && !is_dword) {
+				fin.seekg(length * dest[i]);
+				fin.read(p, length); 
+				printFont(p, fin.tellg(), length, is_dword, byte_in_row, var_in_row, 
+					slip_horizontal, slip_vertical, slip_inbyte, show_pattern);
+			} else {
+				fprintf(stderr, "// No pattern for %c \n", dest[i]);
+			}
+			i++;
+		}
 
-		std::cout.flush();
+		delete[] source;	
+		delete[] dest;
 	}
 
 	fin.close();
@@ -132,4 +170,21 @@ int main(int argc, char ** argv)
 	delete[] p;
 
 	exit(EXIT_SUCCESS);
+}
+
+void printFont(char *p, long pos, int length, bool is_dword, int byte_in_row, int var_in_row, 
+		bool slip_horizontal, bool slip_vertical, bool slip_inbyte, bool show_pattern)
+{
+	std::cout << getHeader(pos, length, is_dword) << std::endl;
+
+	Block block(p, length, byte_in_row);
+
+	if (slip_horizontal) block.slipInRow();
+	if (slip_vertical) block.slipInCol();
+	if (slip_inbyte) block.slipInByte();
+
+	std::cout << block.getVarString(var_in_row) << std::endl;
+
+	if (show_pattern)
+		std::cout << block.getPatternString() << std::endl;
 }
