@@ -136,8 +136,6 @@ int main(int argc, char ** argv)
 		}
 	}
 
-	std::cout << str.length() << std::endl;
-
 	int length = byte_in_row * row_count;
 	bool is_dword = strcmp(code_sys, "ASC");
 
