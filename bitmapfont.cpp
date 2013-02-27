@@ -77,8 +77,9 @@ int main(int argc, char ** argv)
 	byte transform = 0x00;
 	byte move_direction = 0x00;
 	int move_step = 0x00;
+	std::string str;
 
-	while ((opt = getopt(argc, argv, ":f:c:n:phvbdr:t:m:s")) != -1) {
+	while ((opt = getopt(argc, argv, ":f:c:n:phvbdr:t:m:sa:")) != -1) {
 		switch (opt) {
 			case 'f':
 				sscanf(optarg, "%*[^/]/%3s%d", code_sys, &row_count);
@@ -119,6 +120,9 @@ int main(int argc, char ** argv)
 			case 't':
 				move_step = atoi(optarg);
 				break;
+			case 'a':
+				str.append(optarg);
+				break;
 			case ':':
 				std::cerr << "option needs a value." << std::endl;
 				exit(EXIT_FAILURE);
@@ -132,11 +136,7 @@ int main(int argc, char ** argv)
 		}
 	}
 
-	std::string str;
-	while (optind < argc) {
-		str.append(argv[optind]);
-		optind++;
-	}
+	std::cout << str.length() << std::endl;
 
 	int length = byte_in_row * row_count;
 	bool is_dword = strcmp(code_sys, "ASC");
@@ -152,10 +152,11 @@ int main(int argc, char ** argv)
 			printFont(block, var_in_row, show_pattern, transform, move_direction, move_step);
 		} 
 	} else {
-		char *source = new char [str.length() + 1];
+		int len = str.length() + 1;
+		char *source = new char[len];
 		std::strcpy(source, str.c_str());
-		char *dest = new char[str.length() + 1];
-		convertCode("GB2312", "utf-8", source, sizeof(source), dest, sizeof(dest));
+		char *dest = new char[len];
+		convertCode("GB2312", "utf-8", source, len, dest, len);
 		delete[] source;	
 
 		unsigned int i = 0;
