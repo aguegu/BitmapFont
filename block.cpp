@@ -58,6 +58,8 @@ void Block::slipInCol()
 
 void Block::slipInDiag()
 {
+	if (!isSquare()) return;
+
 	byte * cache = new byte[_length];
 	memset(cache, 0x00, _length);
 

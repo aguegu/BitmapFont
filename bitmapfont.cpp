@@ -70,7 +70,6 @@ int main(int argc, char ** argv)
 	int byte_in_row = 1;
 	int row_count = 1;
 	char code_sys[4] = "\0";
-	char *file_font = NULL;
 	bool show_pattern = false;
 	int var_in_row = 8;
 
@@ -78,12 +77,14 @@ int main(int argc, char ** argv)
 	byte move_direction = 0x00;
 	int move_step = 0x00;
 	std::string str;
+	std::string s_in;
+	std::string s_out;
 
-	while ((opt = getopt(argc, argv, ":f:c:n:phvbdr:t:m:sa:")) != -1) {
+	while ((opt = getopt(argc, argv, ":f:c:n:phvbdr:t:m:sa:o:")) != -1) {
 		switch (opt) {
 			case 'f':
 				sscanf(optarg, "%*[^/]/%3s%d", code_sys, &row_count);
-				file_font = optarg;
+				s_in = optarg;
 				break;
 			case 'c':
 				byte_in_row = atoi(optarg);
@@ -123,6 +124,9 @@ int main(int argc, char ** argv)
 			case 'a':
 				str.append(optarg);
 				break;
+			case 'o':
+				s_out.append(optarg);
+				break;
 			case ':':
 				std::cerr << "option needs a value." << std::endl;
 				exit(EXIT_FAILURE);
@@ -139,7 +143,11 @@ int main(int argc, char ** argv)
 	int length = byte_in_row * row_count;
 	bool is_dword = strcmp(code_sys, "ASC");
 
-	std::ifstream fin(file_font, std::ios::binary);
+	std::ifstream fin(s_in.c_str(), std::ios::binary);
+	std::ofstream fout;
+
+	if (s_out.length())
+		fout.open(s_out.c_str(), std::ios::binary);
 
 	char *p = new char[length];
 	Block block(p, length, byte_in_row);
@@ -148,6 +156,7 @@ int main(int argc, char ** argv)
 		while (fin.read(p, length)) {
 			std::cout << getHeader(fin.tellg(), length, is_dword) << std::endl;
 			printFont(block, var_in_row, show_pattern, transform, move_direction, move_step);
+			if (s_out.length()) fout.write(p, length);
 		} 
 	} else {
 		int len = str.length() + 1;
@@ -166,11 +175,13 @@ int main(int argc, char ** argv)
 				fin.read(p, length); 
 				std::cout << getHeader(fin.tellg(), length, is_dword) << std::endl;
 				printFont(block, var_in_row, show_pattern, transform, move_direction, move_step);
+				if (s_out.length()) fout.write(p, length);
 			} else if (c >= 0xa1 && is_dword ) {
 				fin.seekg(((c - 0xa1) * 94 + (byte)dest[i+1] - 0xa1) * length);	
 				fin.read(p, length); 
 				std::cout << getHeader(fin.tellg(), length, is_dword) << std::endl;
 				printFont(block, var_in_row, show_pattern, transform, move_direction, move_step);
+				if (s_out.length()) fout.write(p, length);
 				i++;
 			} else {
 				std::cerr << "// No pattern for " << (char)dest[i] << std::endl;
@@ -183,6 +194,10 @@ int main(int argc, char ** argv)
 
 	fin.close();
 	delete[] p;
+
+	if (s_out.length())
+		fout.close();
+
 	exit(EXIT_SUCCESS);
 }
 
@@ -236,6 +251,7 @@ void printFont(Block & block, int var_in_row, bool show_pattern, byte transform,
 	if (bitRead(transform, 1)) block.slipInCol();
 	if (bitRead(transform, 2)) block.slipInByte();
 	if (bitRead(transform, 3)) block.opposite();
+	if (bitRead(transform, 6)) block.slipInDiag();
 
 	std::cout << block.getVarString(var_in_row) << std::endl;
 
