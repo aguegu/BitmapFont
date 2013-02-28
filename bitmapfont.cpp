@@ -4,9 +4,7 @@
 //               character in a bitmap font file. hope to help programming 
 //               character display stored in arrays, especially for micro 
 //               controller system.
-// Version     : 1.0
-// Copyright   : Attribution-NonCommercial 3.0 Unported (CC BY-NC 3.0) 
-// 	             http://creativecommons.org/licenses/by-nc/3.0/
+// Version     : 2.0
 // Author      : Weihong Guan (@aGuegu)
 // Email       : weihong.guan@gmail.com
 // Blog        : http://aguegu.net
@@ -79,6 +77,7 @@ int main(int argc, char ** argv)
 	std::string str;
 	std::string s_in;
 	std::string s_out;
+	std::string s_tmp = ".tmp";
 
 	while ((opt = getopt(argc, argv, ":f:c:n:phvbdr:t:m:sa:o:")) != -1) {
 		switch (opt) {
@@ -144,10 +143,7 @@ int main(int argc, char ** argv)
 	bool is_dword = strcmp(code_sys, "ASC");
 
 	std::ifstream fin(s_in.c_str(), std::ios::binary);
-	std::ofstream fout;
-
-	if (s_out.length())
-		fout.open(s_out.c_str(), std::ios::binary);
+	std::ofstream fout(s_tmp.c_str(), std::ios::binary);
 
 	char *p = new char[length];
 	Block block(p, length, byte_in_row);
@@ -156,7 +152,7 @@ int main(int argc, char ** argv)
 		while (fin.read(p, length)) {
 			std::cout << getHeader(fin.tellg(), length, is_dword) << std::endl;
 			printFont(block, var_in_row, show_pattern, transform, move_direction, move_step);
-			if (s_out.length()) fout.write(p, length);
+			fout.write(p, length);
 		} 
 	} else {
 		int len = str.length() + 1;
@@ -169,19 +165,18 @@ int main(int argc, char ** argv)
 		unsigned int i = 0;
 		while (i < strlen(dest)) {
 			byte c = dest[i];
-
 			if (c < 0x7f && !is_dword) {
 				fin.seekg(length * dest[i]);
 				fin.read(p, length); 
 				std::cout << getHeader(fin.tellg(), length, is_dword) << std::endl;
 				printFont(block, var_in_row, show_pattern, transform, move_direction, move_step);
-				if (s_out.length()) fout.write(p, length);
+				fout.write(p, length);
 			} else if (c >= 0xa1 && is_dword ) {
 				fin.seekg(((c - 0xa1) * 94 + (byte)dest[i+1] - 0xa1) * length);	
 				fin.read(p, length); 
 				std::cout << getHeader(fin.tellg(), length, is_dword) << std::endl;
 				printFont(block, var_in_row, show_pattern, transform, move_direction, move_step);
-				if (s_out.length()) fout.write(p, length);
+				fout.write(p, length);
 				i++;
 			} else {
 				std::cerr << "// No pattern for " << (char)dest[i] << std::endl;
@@ -192,19 +187,21 @@ int main(int argc, char ** argv)
 		delete[] dest;
 	}
 
-	fin.close();
 	delete[] p;
+	fin.close();
+	fout.close();
 
 	if (s_out.length())
-		fout.close();
+		rename(s_tmp.c_str(), s_out.c_str());
+	else
+		remove(s_tmp.c_str());
 
 	exit(EXIT_SUCCESS);
 }
 
 void moveBlock(Block & block, int direction, int step)
 {
-	switch (direction & 0x0f)
-	{
+	switch (direction & 0x0f) {
 		case 0x01:
 			block.setMoveDirection(Block::BIT_IN_COL_POSI);
 			break;
@@ -223,9 +220,7 @@ void moveBlock(Block & block, int direction, int step)
 	}
 
 	while (step--)
-	{
 		block.move(direction & 0x10);
-	}
 }
 
 void printFont(Block & block, int var_in_row, bool show_pattern, byte transform, byte direction, int step)
@@ -247,16 +242,14 @@ void printFont(Block & block, int var_in_row, bool show_pattern, byte transform,
 
 	moveBlock(block, direction, step);
 
+	if (bitRead(transform, 6)) block.slipInDiag();
 	if (bitRead(transform, 0)) block.slipInRow();
 	if (bitRead(transform, 1)) block.slipInCol();
 	if (bitRead(transform, 2)) block.slipInByte();
 	if (bitRead(transform, 3)) block.opposite();
-	if (bitRead(transform, 6)) block.slipInDiag();
 
 	std::cout << block.getVarString(var_in_row) << std::endl;
 
 	if (show_pattern)
 		std::cout << block.getPatternString() << std::endl;
 }
-
-
