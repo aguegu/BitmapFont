@@ -1,8 +1,5 @@
 output/
-font_hack/
-BitmapFont
-HackFont
-SearchFont
+bitmapfont
 
 *.*~
 *~
