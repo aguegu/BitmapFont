@@ -15,7 +15,7 @@ bool Block::isSquare()
 	return (_byte_in_row * 8 == _row_count);
 }
 
-byte Block::slipByte(byte c)
+byte Block::flipByte(byte c)
 {
 	return (*(REVERSE + (c & (byte) 0x0f)) << 4)
 			^ (*(REVERSE + (c >> 4)) & (byte) 0x0f);
@@ -24,10 +24,10 @@ byte Block::slipByte(byte c)
 void Block::reverseArrayInBit(byte *destination, byte *source, int length)
 {
 	for (int i = 0; i < length; i++)
-		destination[i] = slipByte(source[length - 1 - i]);
+		destination[i] = flipByte(source[length - 1 - i]);
 }
 
-void Block::slipInRow()
+void Block::flipInRow()
 {
 	byte * cache = new byte[_byte_in_row];
 	byte * p = _p;
@@ -39,7 +39,7 @@ void Block::slipInRow()
 	delete[] cache;
 }
 
-void Block::slipInCol()
+void Block::flipInCol()
 {
 	byte * cache = new byte[_byte_in_row];
 	byte * p = _p;
@@ -56,7 +56,7 @@ void Block::slipInCol()
 	delete[] cache;
 }
 
-void Block::slipInDiag()
+void Block::flipInDiag()
 {
 	if (!isSquare()) return;
 
@@ -184,16 +184,16 @@ void Block::rotate(Rotation r)
 	switch (r)
 	{
 	case R90:
-		this->slipInDiag();
-		this->slipInCol();
+		this->flipInDiag();
+		this->flipInCol();
 		break;
 	case R180:
-		this->slipInCol();
-		this->slipInRow();
+		this->flipInCol();
+		this->flipInRow();
 		break;
 	case R270:
-		this->slipInDiag();
-		this->slipInRow();
+		this->flipInDiag();
+		this->flipInRow();
 		break;
 	default:
 		break;
@@ -211,13 +211,13 @@ void Block::opposite()
 	}
 }
 
-void Block::slipInByte()
+void Block::flipInByte()
 {
 	byte *p = _p;
 	int i = _length;
 	while (i--)
 	{
-		*p = slipByte(*p);
+		*p = flipByte(*p);
 		p++;
 	}
 }

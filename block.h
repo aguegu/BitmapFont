@@ -39,10 +39,10 @@ public:
 
 	bool isSquare();
 
-	void slipInRow();
-	void slipInCol();
-	void slipInDiag();
-	void slipInByte();
+	void flipInRow();
+	void flipInCol();
+	void flipInDiag();
+	void flipInByte();
 
 	enum Direction
 	{
@@ -62,7 +62,7 @@ public:
 	void rotate(Rotation r);
 	void opposite();
 
-	static byte slipByte(byte c);
+	static byte flipByte(byte c);
 	static std::string byteStringPure(unsigned char c);
 	static std::string byteString(unsigned char c);
 

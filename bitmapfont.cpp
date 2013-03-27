@@ -242,10 +242,10 @@ void printFont(Block & block, int var_in_row, bool show_pattern, byte transform,
 
 	moveBlock(block, direction, step);
 
-	if (bitRead(transform, 6)) block.slipInDiag();
-	if (bitRead(transform, 0)) block.slipInRow();
-	if (bitRead(transform, 1)) block.slipInCol();
-	if (bitRead(transform, 2)) block.slipInByte();
+	if (bitRead(transform, 6)) block.flipInDiag();
+	if (bitRead(transform, 0)) block.flipInRow();
+	if (bitRead(transform, 1)) block.flipInCol();
+	if (bitRead(transform, 2)) block.flipInByte();
 	if (bitRead(transform, 3)) block.opposite();
 
 	std::cout << block.getVarString(var_in_row) << std::endl;
