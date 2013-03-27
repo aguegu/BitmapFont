@@ -1,19 +1,17 @@
 CC  = 	g++
-CFLAGS = -O2 -g -Wall -c
+CFLAGS = -O2 -g -Wall
 
 SOURCES = bitmapfont.cpp block.cpp
 OBJECTS = $(SOURCES:.cpp=.o)
 TARGET = bitmapfont
 FONTS = ASC12 ASC16 ASC48 HZK12 HZK14 HZK16 HZK16F HZK16S HZK24F HZK24H HZK24K HZK24S HZK32 HZK40 HZK48
 
-:$(TARGET)
-
 $(TARGET): $(OBJECTS)
 	$(CC) $(OBJECTS) -o $@
 	mkdir -p output/
 
 %.o: %.cpp
-	$(CC) $(CFLAGS) $< -o $@
+	$(CC) $(CFLAGS) -c $< -o $@ 
 
 allfonts:$(FONTS)
 
