@@ -1,6 +1,5 @@
 output/
 bitmapfont
-test/block_test
 
 *.*~
 *~
@@ -20,3 +19,5 @@ test/block_test
 *.lai
 *.la
 *.a
+
+*_test

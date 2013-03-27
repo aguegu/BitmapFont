@@ -14,4 +14,7 @@ TEST(Block, testIsSquare)
 TEST(Block, testSlipByte)
 {
 	EXPECT_EQ(0x01, Block::flipByte(0x80));
+	EXPECT_EQ(0x0f, Block::flipByte(0xf0));
+	EXPECT_EQ(0xc0, Block::flipByte(0x03));
+	
 }
